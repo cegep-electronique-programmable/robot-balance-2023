@@ -115,6 +115,9 @@ Différentes info :
 * Divers tutoriaux recommandent ([Par exemple](https://deepbluembedded.com/esp32-i2c-tutorial-change-pins-i2c-scanner-arduino/#I2C_Bus_Lines)):
   * SCL GPIO 22
   * SDA GPIO 21 
+  
+  ![image](https://user-images.githubusercontent.com/32198019/214665266-d51fead5-9cdc-4ce7-bf78-924b9762b46b.png)
+
 
 Je ne comprends pas encore à quel point le MUX (RTC_MUX ?) permet de faire des choix par firmware.
 
