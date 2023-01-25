@@ -50,7 +50,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | --- | --- | --- | --- |
 | 1 | Alimentation | `GND` | |
 | 2 | Alimentation | `3V3` | |
-| 3 | Démarrage | `EN` | Enable |
+| 3 | Contrôle | `EN` | Enable |
 | 4 |   |
 | 5 |   |
 | 6 |   |
@@ -91,6 +91,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 RéférenceS : 
 * [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
 * [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
+* [Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 
 ## Firmware
 
