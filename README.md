@@ -82,19 +82,13 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | 32 | NC | Aucun | Non connectée | |
 | 33 |   |
 | 34 | UART | `RXD0` | Broche de reception | |
-| 35 | UART | `TXD0` | Broche d'émission. Ajouter une résistance de 499 en série ? HRG | |
+| 35 | UART | `TXD0` | Broche d'émission. Ajouter une résistance de 499 en série ? [HDG](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf) | |
 | 36 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
 | 37 | I2C | `I2C_SDA` | Signal de données I2C | |
 | 38 | Alimentation | `GND` | | |
 | 39 | Alimentation | `GND` | | |
 
-RéférenceS : 
-* [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
-* [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
-* [HRG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
-* [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
-* [blog](https://www.techtonions.com/esp32-pinout-simplified-no-more-confusion-when-choosing-gpios/)
-* [Pin map](https://cdn.techtonions.com/wp-content/uploads/2022/01/Detail-Pins-Overview-Of-ESP32.pdf?_gl=1*17o64c0*_ga*MTAyODc4OTI3OC4xNjc0Njc0NjM5*_ga_H8ZZ168JCQ*MTY3NDY3NDYzOS4xLjAuMTY3NDY3NDYzOS4wLjAuMA..)
+
 
 
 ### SPI 🟠
@@ -146,3 +140,11 @@ Garder 15 mm d'espaces sur les 3 côtés de l'antenne.
 ## Firmware
 
 * [ ] Section à compléter
+
+# Références : 
+* [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
+* [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
+* [HDG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
+* [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
+* [Blog: ESP32 Pinout simplified: No more confusion when choosing GPIOs.](https://www.techtonions.com/esp32-pinout-simplified-no-more-confusion-when-choosing-gpios/)
+* [Pin map](https://cdn.techtonions.com/wp-content/uploads/2022/01/Detail-Pins-Overview-Of-ESP32.pdf?_gl=1*17o64c0*_ga*MTAyODc4OTI3OC4xNjc0Njc0NjM5*_ga_H8ZZ168JCQ*MTY3NDY3NDYzOS4xLjAuMTY3NDY3NDYzOS4wLjAuMA..)
