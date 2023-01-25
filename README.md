@@ -82,7 +82,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | 32 | NC | Aucun | Non connectée |
 | 33 |   |
 | 34 | UART | `RXD0` | Broche de reception |
-| 35 | UART | `TXD0` | Broche d'émission |
+| 35 | UART | `TXD0` | Broche d'émission. Ajouter une résistance en série pour éliminer les harmoniques à 80 MHz (HRG) |
 | 36 | I2C | `I2C_SCL` | Signal d'horloge I2C |
 | 37 | I2C | `I2C_SDA` | Signal de données I2C |
 | 38 | Alimentation | `GND` | |
@@ -91,7 +91,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 RéférenceS : 
 * [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
 * [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
-* [Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
+* [HRG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 
 ## Firmware
 
