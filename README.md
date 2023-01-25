@@ -46,12 +46,12 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 ### Choix des broches du microcontrôleur
 
-| Pin | Description |
-| --- | --- |
-| 1 | GND |
-| 2 | 3V3 |
-| 3 | EN |
-| 4 |  |
+| Pin | Mode | Signal | Commentaire |
+| --- | --- | --- | --- |
+| 1 | Alimentation | `GND` | |
+| 2 | Alimentation | `3V3` | |
+| 3 | Démarrage | `EN` | Enable |
+| 4 |   |
 | 5 |   |
 | 6 |   |
 | 7 |   |
@@ -62,8 +62,8 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | 12 |   |
 | 13 |   |
 | 14 |   |
-| 15 | GND |
-| 16 |   |
+| 15 | Alimentation | `GND` | |
+| 16 | Debug | `USER_LED` | Essayer de garde cette broche pour la DEL utilisateur |
 | 17 |   |
 | 18 |   |
 | 19 |   |
@@ -72,24 +72,25 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | 22 |   |
 | 23 |   |
 | 24 |   |
-| 25 |   |
+| 25 | Déamrrage | `BOOT` | Boot |
 | 26 |   |
 | 27 |   |
 | 28 |   |
-| 29 |   |
-| 30 |   |
-| 31 |   |
-| 32 | Non connectée |
+| 29 | SPI | `SPI_SCK` | |
+| 30 | SPI | `SPI_MOSI` | |
+| 31 | SPI | `SPI_MISO` | |
+| 32 | NC | Aucun | Non connectée |
 | 33 |   |
-| 34 |   |
-| 35 | TX |
-| 36 | RX |
-| 37 |   |
-| 38 | GND |
-| 39 | GND |
+| 34 | UART | `RXD0` | Broche de reception |
+| 35 | UART | `TXD0` | Broche d'émission |
+| 36 | I2C | `I2C_SCL` | Signal d'horloge I2C |
+| 37 | I2C | `I2C_SDA` | Signal de données I2C |
+| 38 | Alimentation | `GND` | |
+| 39 | Alimentation | `GND` | |
 
 RéférenceS : 
-* [esp32_devkitc_v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
+* [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
+* [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
 
 ## Firmware
 
