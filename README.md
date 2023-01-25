@@ -60,25 +60,25 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | 10 |   |
 | 11 |   |
 | 12 |   |
-| 13 |   |
-| 14 |   |  |  | X |
+| 13 | HSPI | `HSPICLK` | Horloge HSPI | |
+| 14 | HSPI | `HSPIQ` | Émission HSPI | X |
 | 15 | Alimentation | `GND` | | |
-| 16 | Debug | `USER_LED` | Essayer de garde cette broche pour la DEL utilisateur | |
-| 17 |   |
-| 18 |   |
-| 19 | SPI | `SPI_CS0` | SPI Chip Select | |
-| 20 |   |
-| 21 |   |
-| 22 |   |
-| 23 |   |  |  | X |
+| 16 | HSPI | `HSPID` | Réception HSPI | |
+| 17 | Flash interne |  | Ne pas réutiliser |  |
+| 18 | Flash interne |  | Ne pas réutiliser |  |
+| 19 | Flash interne |  | Ne pas réutiliser |  |
+| 20 | Flash interne |  | Ne pas réutiliser |  |
+| 21 | Flash interne |  | Ne pas réutiliser |  |
+| 22 | Flash interne |  | Ne pas réutiliser |  |
+| 23 | HSPI | `HSPICS0` | Chip Select HSPI | X |
 | 24 |   |  |  | X |
 | 25 | Démarrage | `BOOT` | Boot, ajouter un bouton au signal `GND` | X |
 | 26 |   |
 | 27 |   |
 | 28 |   |
-| 29 | SPI | `SPI_SCK` | Horloge SPI| X |
-| 30 | SPI | `SPI_MOSI` | Transmission SPI | |
-| 31 | SPI | `SPI_MISO` | Réception SPI | |
+| 29 |   |   |   | X |
+| 30 |   |   |   |   |
+| 31 |   |   |   |   |
 | 32 | NC | Aucun | Non connectée | |
 | 33 |   |
 | 34 | UART | `RXD0` | Broche de reception | |
@@ -94,6 +94,18 @@ RéférenceS :
 * [HRG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 * [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
 
+
+### SPI
+
+SPI 0 et 1 sont utilisés à l'interne du module.
+
+On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le I2C sur les broches 36, 37.
+
+[ESP32 Manuel de Référence Technique - Section 7](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi)
+
+### I2C 
+
+[ESP32 Manuel de Référence Technique - Section 12](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#i2c)
 
 ### Circuit de décharge 
 
