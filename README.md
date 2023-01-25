@@ -93,6 +93,7 @@ RéférenceS :
 * [ESP32 Adafruit Huzzah32](https://learn.adafruit.com/adafruit-huzzah32-esp32-feather)
 * [HRG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 * [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
+* [blog](https://www.techtonions.com/esp32-pinout-simplified-no-more-confusion-when-choosing-gpios/)
 
 
 ### SPI 🟠
