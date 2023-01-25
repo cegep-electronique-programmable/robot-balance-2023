@@ -40,7 +40,56 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 ## Électronique
 
+### Composants principaux
+
 * [ ] Section à compléter
+
+### Choix des broches du microcontrôleur
+
+| Pin | Description |
+| --- | --- |
+| 1 | GND |
+| 2 | 3V3 |
+| 3 | EN |
+| 4 |  |
+| 5 |   |
+| 6 |   |
+| 7 |   |
+| 8 |   |
+| 9 |   |
+| 10 |   |
+| 11 |   |
+| 12 |   |
+| 13 |   |
+| 14 |   |
+| 15 | GND |
+| 16 |   |
+| 17 |   |
+| 18 |   |
+| 19 |   |
+| 20 |   |
+| 21 |   |
+| 22 |   |
+| 23 |   |
+| 24 |   |
+| 25 |   |
+| 26 |   |
+| 27 |   |
+| 28 |   |
+| 29 |   |
+| 30 |   |
+| 31 |   |
+| 32 | Non connectée |
+| 33 |   |
+| 34 |   |
+| 35 | TX |
+| 36 | RX |
+| 37 |   |
+| 38 | GND |
+| 39 | GND |
+
+RéférenceS : 
+* [esp32_devkitc_v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
 
 ## Firmware
 
