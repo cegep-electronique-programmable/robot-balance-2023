@@ -94,6 +94,7 @@ RéférenceS :
 * [HRG - Hardware Design Guideline](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf)
 * [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
 * [blog](https://www.techtonions.com/esp32-pinout-simplified-no-more-confusion-when-choosing-gpios/)
+* [Pin map](https://cdn.techtonions.com/wp-content/uploads/2022/01/Detail-Pins-Overview-Of-ESP32.pdf?_gl=1*17o64c0*_ga*MTAyODc4OTI3OC4xNjc0Njc0NjM5*_ga_H8ZZ168JCQ*MTY3NDY3NDYzOS4xLjAuMTY3NDY3NDYzOS4wLjAuMA..)
 
 
 ### SPI 🟠
