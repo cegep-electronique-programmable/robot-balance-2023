@@ -10,7 +10,7 @@ Le **Robot Balance 2023** est une évolution du robot 2017. Les objectifs de la 
 * Surélever le centre de gravité pour **améliorer le contrôle**. La batterie est situé en haut du robot.
 * Pouvoir commander et observer le robot sans fils : La carte LPC1768 est remplacée par une carte à base de **ESP32 (Wifi)**.
 
-# Fichiers de développement
+# Aperçu du développement
 
 ## Mécanique 
 
@@ -31,3 +31,17 @@ La carte électronique est développée dans Fusion 360 et elle est basée sur :
 Le firmware est développé à l'aide de l'outil PlatformIO. Nous utilisons le framework (TBD: Arduino ou IDK).
 
 Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-Dérivé (PID).
+
+# Description détaillée
+
+## Mécanique 
+
+* [ ] Section à compléter
+
+## Électronique
+
+* [ ] Section à compléter
+
+## Firmware
+
+* [ ] Section à compléter
