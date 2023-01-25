@@ -105,7 +105,20 @@ On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le 
 
 ### I2C 
 
-[ESP32 Manuel de Référence Technique - Section 12](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#i2c)
+Différentes info :
+* [Schéma Adafruit](https://learn.adafruit.com/assets/41630) :
+  * SCL Pin 36 IO22
+  * SDA Pin 37 IO23
+* [ESP32 Manuel de Référence Technique - Section 4.11](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi) :
+  * SCL GPIO 4 ou GPIO 2 -> Pin 26 ou 24
+  * SDA GPIO 0 ou GPIO 15 -> Pin 25 ou 23
+* Divers tutoriaux recommandent ([Par exemple](https://deepbluembedded.com/esp32-i2c-tutorial-change-pins-i2c-scanner-arduino/#I2C_Bus_Lines)):
+  * SCL GPIO 22
+  * SDA GPIO 21 
+
+Je ne comprends pas encore à quel point le MUX (RTC_MUX ?) permet de faire des choix par firmware.
+
+[ESP32 Manuel de Référence Technique - Section 11](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#i2c)
 
 ### Circuit de décharge 
 
