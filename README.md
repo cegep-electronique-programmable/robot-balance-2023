@@ -60,10 +60,10 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 10 | GPIO 25 |   |
 | Pin 11 | GPIO 26 |   |
 | Pin 12 | GPIO 27 |   |
-| Pin 13 | GPIO 14 |  |  |  |  |
-| Pin 14 | GPIO 12 |  |  |  | X |
+| Pin 13 | GPIO 14 |   |  |  |  |
+| Pin 14 | GPIO 12 |   |  |  | X |
 | Pin 15 | N/A | Alimentation | `GND` | | |
-| Pin 16 | GPIO 13 |  |  |  |  |
+| Pin 16 | GPIO 13 | LED | `USER_LED` |  |  |
 | Pin 17 | GPIO 9 | Flash interne |  | Ne pas réutiliser |  |
 | Pin 18 | GPIO 10 | Flash interne |  | Ne pas réutiliser |  |
 | Pin 19 | GPIO 11 | Flash interne |  | Ne pas réutiliser |  |
