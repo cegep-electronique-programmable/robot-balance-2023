@@ -48,45 +48,45 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 | # Pin | GPIO | Mode | Signal | Commentaire | Strapping |
 | --- | --- | --- | --- | --- | --- |
-| 1 | N/A | Alimentation | `GND` | | |
-| 2 | N/A | Alimentation | `3V3` | | |
-| 3 |   | Contrôle | `EN` | Enable | |
-| 4 |   |   |
-| 5 |   |   |
-| 6 |   |   |
-| 7 |   |   |
-| 8 |   |   |
-| 9 |   |   |
-| 10 |   |   |
-| 11 |   |   |
-| 12 |   |   |
-| 13 | GPIO14 |  |  |  |  |
-| 14 | GPIO12 |  |  |  | X |
-| 15 | N/A | Alimentation | `GND` | | |
-| 16 | GPIO13 |  |  |  |  |
-| 17 |   | Flash interne |  | Ne pas réutiliser |  |
-| 18 |   | Flash interne |  | Ne pas réutiliser |  |
-| 19 |   | Flash interne |  | Ne pas réutiliser |  |
-| 20 |   | Flash interne |  | Ne pas réutiliser |  |
-| 21 |   | Flash interne |  | Ne pas réutiliser |  |
-| 22 |   | Flash interne |  | Ne pas réutiliser |  |
-| 23 | GPIO15 |  |  |  | X |
-| 24 |   |   |  |  | X |
-| 25 |   | Démarrage | `BOOT` | Boot, ajouter un bouton au signal `GND` | X |
-| 26 |   |   |
-| 27 |   |   |
-| 28 |   |   |
-| 29 | GPIO5 | VSPI | `VSPI_CS` | Chip Select SPI | X |
-| 30 | GPIO18 | VSPI | `VSPI_CLK` | Horloge SPI | |
-| 31 | GPIO19 | VSPI | `VSPI_MISO` | Entrée SPI | |
-| 32 |   | NC | Aucun | Non connectée | |
-| 33 | GPIO21 | I2C | `I2C_SDA` | Signal de données I2C | |
-| 34 | GPIO3 | UART | `RXD0` | Broche de reception | |
-| 35 | GPIO1 | UART | `TXD0` | Broche d'émission. Ajouter une résistance de 499 en série ? [HDG](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf) | |
-| 36 | GPIO22 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
-| 37 | GPIO23 | VSPI | `VSPI_MOSI` | Sortie SPI | |
-| 38 | N/A | Alimentation | `GND` | | |
-| 39 | N/A | Alimentation | `GND` | | |
+| Pin 1 | N/A | Alimentation | `GND` | | |
+| Pin 2 | N/A | Alimentation | `3V3` | | |
+| Pin 3 |   | Contrôle | `EN` | Enable | |
+| Pin 4 | GPIO 36 |   |
+| Pin 5 | GPIO 39 |   |
+| Pin 6 | GPIO 34 |   |
+| Pin 7 | GPIO 35 |   |
+| Pin 8 | GPIO 32 |   |
+| Pin 9 | GPIO 33 |   |
+| Pin 10 | GPIO 25 |   |
+| Pin 11 | GPIO 26 |   |
+| Pin 12 | GPIO 27 |   |
+| Pin 13 | GPIO 14 |  |  |  |  |
+| Pin 14 | GPIO 12 |  |  |  | X |
+| Pin 15 | N/A | Alimentation | `GND` | | |
+| Pin 16 | GPIO 13 |  |  |  |  |
+| Pin 17 | GPIO 9 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 18 | GPIO 10 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 19 | GPIO 11 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 20 | GPIO 6 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 21 | GPIO 7 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 22 | GPIO 8 | Flash interne |  | Ne pas réutiliser |  |
+| Pin 23 | GPIO 15 |  |  |  | X |
+| Pin 24 | GPIO 2 |   |  |  | X |
+| Pin 25 | GPIO 0 | Démarrage | `BOOT` | Boot, ajouter un bouton au signal `GND` | X |
+| Pin 26 | GPIO 4 |   |
+| Pin 27 | GPIO 16 |   |
+| Pin 28 | GPIO 17 |   |
+| Pin 29 | GPIO 5 | VSPI | `VSPI_CS` | Chip Select SPI | X |
+| Pin 30 | GPIO 18 | VSPI | `VSPI_CLK` | Horloge SPI | |
+| Pin 31 | GPIO 19 | VSPI | `VSPI_MISO` | Entrée SPI | |
+| Pin 32 | N/A | NC | Aucun | Non connectée | |
+| Pin 33 | GPIO 21 | I2C | `I2C_SDA` | Signal de données I2C | |
+| Pin 34 | GPIO 3 | UART | `RXD0` | Broche de reception | |
+| Pin 35 | GPIO 1 | UART | `TXD0` | Broche d'émission. Ajouter une résistance de 499 en série ? [HDG](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf) | |
+| Pin 36 | GPIO 22 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
+| Pin 37 | GPIO 23 | VSPI | `VSPI_MOSI` | Sortie SPI | |
+| Pin 38 | N/A | Alimentation | `GND` | | |
+| Pin 39 | N/A | Alimentation | `GND` | | |
 
 
 
