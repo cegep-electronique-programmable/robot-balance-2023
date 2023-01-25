@@ -95,7 +95,7 @@ RéférenceS :
 * [ESP32_WROOM datasheet](https://www.mouser.com/datasheet/2/891/esp-wroom-32_datasheet_en-1223836.pdf)
 
 
-### SPI
+### SPI 🟠
 
 SPI 0 et 1 sont utilisés à l'interne du module.
 
@@ -103,7 +103,7 @@ On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le 
 
 [ESP32 Manuel de Référence Technique - Section 7](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi)
 
-### I2C 
+### I2C 🔴
 
 Différentes info :
 * [Schéma Adafruit](https://learn.adafruit.com/assets/41630) :
