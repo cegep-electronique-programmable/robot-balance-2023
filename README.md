@@ -99,6 +99,8 @@ On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le 
 
 [ESP32 Manuel de Référence Technique - Section 7](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi)
 
+Les infos sur le shcéma adafruit placent les MOSI à la pin 30 (GPIO 18), MISO à la pin 31 (GPIO 19) et SCK à la pin 29 (GPIO 5)
+
 ### I2C 🔴
 
 Différentes info :
