@@ -82,7 +82,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 32 | N/A | NC | Aucun | Non connectée | |
 | Pin 33 | GPIO 21 | I2C | `I2C_SDA` | Signal de données I2C | |
 | Pin 34 | GPIO 3 | UART | `RXD0` | Broche de reception | |
-| Pin 35 | GPIO 1 | UART | `TXD0` | Broche d'émission. Ajouter une résistance de 499 en série ? [HDG](https://www.espressif.com/sites/default/files/documentation/esp32_hardware_design_guidelines_en.pdf). La résistanc est déjà présente dans le module Wroom, pas besoin de la rajouter en externe| |
+| Pin 35 | GPIO 1 | UART | `TXD0` | Broche d'émission | |
 | Pin 36 | GPIO 22 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
 | Pin 37 | GPIO 23 | VSPI | `VSPI_MOSI` | Sortie SPI | |
 | Pin 38 | N/A | Alimentation | `GND` | | |
