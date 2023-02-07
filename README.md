@@ -73,7 +73,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 23 | GPIO 15 |  |  |  | X |
 | Pin 24 | GPIO 2 |   |  |  | X |
 | Pin 25 | GPIO 0 | Démarrage | `BOOT` | Boot, ajouter un bouton au signal `GND` | X |
-| Pin 26 | GPIO 4 |   |
+| Pin 26 | GPIO 4 | data neopixel | `DATA_LED` | sortie pour bus neopixel |
 | Pin 27 | GPIO 16 |   |
 | Pin 28 | GPIO 17 |   |
 | Pin 29 | GPIO 5 | VSPI | `VSPI_CS` | Chip Select SPI | X |
