@@ -51,16 +51,16 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 1 | N/A | Alimentation | `GND` | | |
 | Pin 2 | N/A | Alimentation | `3V3` | | |
 | Pin 3 | N/A | Contrôle | `EN` | Enable | |
-| Pin 4 | GPIO 36 |   |
-| Pin 5 | GPIO 39 |   |
-| Pin 6 | GPIO 34 |   |
-| Pin 7 | GPIO 35 |   |
-| Pin 8 | GPIO 32 |   |
-| Pin 9 | GPIO 33 |   |
-| Pin 10 | GPIO 25 |   |
-| Pin 11 | GPIO 26 |   |
-| Pin 12 | GPIO 27 |   |
-| Pin 13 | GPIO 14 |   |  |  |  |
+| Pin 4 | GPIO 36 |   | `EN_D` |
+| Pin 5 | GPIO 39 |   | `MS1_D` |
+| Pin 6 | GPIO 34 |   | `MS2_D` |
+| Pin 7 | GPIO 35 |   | `MS3_D` |
+| Pin 8 | GPIO 32 |   | `EN_G` |
+| Pin 9 | GPIO 33 |   | `MS1_G` |
+| Pin 10 | GPIO 25 |   | `MS2_G` |
+| Pin 11 | GPIO 26 |   | `MS3_G` |
+| Pin 12 | GPIO 27 | Bouton 1  | `B1` |
+| Pin 13 | GPIO 14 | Bouton 2  | `B2` |  |  |
 | Pin 14 | GPIO 12 |   |  |  | X |
 | Pin 15 | N/A | Alimentation | `GND` | | |
 | Pin 16 | GPIO 13 | LED | `USER_LED` |  |  |
