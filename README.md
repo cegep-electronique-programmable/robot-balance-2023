@@ -50,7 +50,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | --- | --- | --- | --- | --- | --- |
 | Pin 1 | N/A | Alimentation | `GND` | | |
 | Pin 2 | N/A | Alimentation | `3V3` | | |
-| Pin 3 | N/A | Contrôle | `EN` | Enable | |
+| Pin 3 | N/A | Contrôle | `RESET` | Enable | |
 | Pin 4 | GPIO 36 |   | `EN_D` |
 | Pin 5 | GPIO 39 |   | `MS1_D` |
 | Pin 6 | GPIO 34 |   | `MS2_D` |
