@@ -8,7 +8,7 @@ Informations techniques du robot qui tient en équilibre sur deux roues.
 Le **Robot Balance 2023** est une évolution du robot 2017. Les objectifs de la nouvelles version sont :
 * Enlever les fils d'alimentation : Le robot est maintenant alimenté par une **batterie 12V**.
 * Surélever le centre de gravité pour **améliorer le contrôle**. La batterie est situé en haut du robot.
-* Pouvoir commander et observer le robot sans fils : La carte LPC1768 est remplacée par une carte à base de **ESP32 (Wifi)**.
+* Pouvoir commander et observer le robot sans fils : La carte LPC1768 est remplacée par une carte à base de **ESP32 (Wifi & Bluetooth)**.
 
 # Aperçu du développement
 
