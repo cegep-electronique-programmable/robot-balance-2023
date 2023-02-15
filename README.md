@@ -61,7 +61,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 11 | GPIO 26 |   | `MS3_G` |
 | Pin 12 | GPIO 27 |   | `STEP_G` |
 | Pin 13 | GPIO 14 |   | `STEP_D` |  |  |
-| Pin 14 | GPIO 12 | réservée  |  |  | X |
+| Pin 14 | GPIO 12 | Réservée |  | Configuration de la tension d'alimentation | X |
 | Pin 15 | N/A | Alimentation | `GND` | | |
 | Pin 16 | GPIO 13 | LED | `USER_LED` |  |  |
 | Pin 17 | GPIO 9 | Flash interne |  | Ne pas réutiliser |  |
@@ -72,10 +72,10 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 22 | GPIO 8 | Flash interne |  | Ne pas réutiliser |  |
 | Pin 23 | GPIO 15 | Bouton 1 | `B1` |  | X |
 | Pin 24 | GPIO 2 |  Bouton 2 | `B2` |  | X |
-| Pin 25 | GPIO 0 | Démarrage | `BOOT` | Boot, ajouter un bouton au signal `GND` | X |
-| Pin 26 | GPIO 4 | data neopixel | `DATA_LED` | sortie pour bus neopixel |
-| Pin 27 | GPIO 16 |   | `DIR_G` |
-| Pin 28 | GPIO 17 |   | `DIR_D` |
+| Pin 25 | GPIO 0 | Démarrage | `BOOT` | Boot SPI ou Upload | X |
+| Pin 26 | GPIO 4 | data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
+| Pin 27 | GPIO 16 |   | `DIR_G` | |
+| Pin 28 | GPIO 17 |   | `DIR_D` | |
 | Pin 29 | GPIO 5 | VSPI | `VSPI_CS` | Chip Select SPI | X |
 | Pin 30 | GPIO 18 | VSPI | `VSPI_CLK` | Horloge SPI | |
 | Pin 31 | GPIO 19 | VSPI | `VSPI_MISO` | Entrée SPI | |
