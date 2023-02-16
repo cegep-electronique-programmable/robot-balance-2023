@@ -63,7 +63,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 13 | GPIO 14 |   | `STEP_D` |  |  |
 | Pin 14 | GPIO 12 | Réservée |  | Configuration de la tension d'alimentation | X |
 | Pin 15 | N/A | Alimentation | `GND` | | |
-| Pin 16 | GPIO 13 | LED | `USER_LED` |  |  |
+| Pin 16 | GPIO 13 | VSPI | `CS2` | Chip Select 2 SPI |  |
 | Pin 17 | GPIO 9 | Flash interne |  | Ne pas réutiliser |  |
 | Pin 18 | GPIO 10 | Flash interne |  | Ne pas réutiliser |  |
 | Pin 19 | GPIO 11 | Flash interne |  | Ne pas réutiliser |  |
@@ -76,15 +76,15 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 26 | GPIO 4 | data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
 | Pin 27 | GPIO 16 |   | `DIR_G` | |
 | Pin 28 | GPIO 17 |   | `DIR_D` | |
-| Pin 29 | GPIO 5 | VSPI | `VSPI_CS` | Chip Select SPI | X |
-| Pin 30 | GPIO 18 | VSPI | `VSPI_CLK` | Horloge SPI | |
-| Pin 31 | GPIO 19 | VSPI | `VSPI_MISO` | Entrée SPI | |
+| Pin 29 | GPIO 5 | VSPI | `CS1` | Chip Select 1 SPI | X |
+| Pin 30 | GPIO 18 | VSPI | `SCK` | Horloge SPI | |
+| Pin 31 | GPIO 19 | VSPI | `MISO` | Entrée SPI | |
 | Pin 32 | N/A | NC | Aucun | Non connectée | |
 | Pin 33 | GPIO 21 | I2C | `I2C_SDA` | Signal de données I2C | |
 | Pin 34 | GPIO 3 | UART | `RXD0` | Broche de reception | |
 | Pin 35 | GPIO 1 | UART | `TXD0` | Broche d'émission | |
 | Pin 36 | GPIO 22 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
-| Pin 37 | GPIO 23 | VSPI | `VSPI_MOSI` | Sortie SPI | |
+| Pin 37 | GPIO 23 | VSPI | `MOSI` | Sortie SPI | |
 | Pin 38 | N/A | Alimentation | `GND` | | |
 | Pin 39 | N/A | Alimentation | `GND` | | |
 
