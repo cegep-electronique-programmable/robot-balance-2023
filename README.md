@@ -48,7 +48,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 | # Pin | GPIO | TYPE | Mode | Signal | Commentaire | Strapping |
 | --- | --- | --- | --- | --- | --- | --- |
-| Pin 1 | N/A |P|  Alimentation | `GND` | | |
+| Pin 1 | N/A | P |  Alimentation | `GND` | | |
 | Pin 2 | N/A |P|  Alimentation | `3V3` | | |
 | Pin 3 | N/A |I|  Contrôle | `RESET` | Enable | |
 | Pin 4 | GPIO 36 |I|  Bouton 1 | `B1` |
