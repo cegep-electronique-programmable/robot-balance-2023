@@ -55,7 +55,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 5 | GPIO 39 | Contôle du moteur droit  | `MS1_D` |
 | Pin 6 | GPIO 34 | Contôle du moteur droit  | `MS2_D` |
 | Pin 7 | GPIO 35 |  Contôle du moteur droit | `MS3_D` |
-| Pin 8 | GPIO 32 | Contôle du moteur gauche  | `EN_G` |
+| Pin 8 | GPIO 32 | Enables des moteurs  | `EN_MOTEURS` |
 | Pin 9 | GPIO 33 | Contôle du moteur gauche  | `MS1_G` |
 | Pin 10 | GPIO 25 | Contôle du moteur gauche  | `MS2_G` |
 | Pin 11 | GPIO 26 | Contôle du moteur gauche  | `MS3_G` |
