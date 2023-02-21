@@ -46,47 +46,47 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 ### Choix des broches du microcontrôleur
 
-| # Pin | GPIO | Mode | Signal | Commentaire | Strapping |
-| --- | --- | --- | --- | --- | --- |
-| Pin 1 | N/A | Alimentation | `GND` | | |
-| Pin 2 | N/A | Alimentation | `3V3` | | |
-| Pin 3 | N/A | Contrôle | `RESET` | Enable | |
-| Pin 4 | GPIO 36 | Contôle du moteur droit  | `EN_D` |
-| Pin 5 | GPIO 39 | Contôle du moteur droit  | `MS1_D` |
-| Pin 6 | GPIO 34 | Contôle du moteur droit  | `MS2_D` |
-| Pin 7 | GPIO 35 |  Contôle du moteur droit | `MS3_D` |
-| Pin 8 | GPIO 32 | Enables des moteurs  | `EN_MOTEURS` |
-| Pin 9 | GPIO 33 | Contôle du moteur gauche  | `MS1_G` |
-| Pin 10 | GPIO 25 | Contôle du moteur gauche  | `MS2_G` |
-| Pin 11 | GPIO 26 | Contôle du moteur gauche  | `MS3_G` |
-| Pin 12 | GPIO 27 | Contôle du moteur gauche  | `STEP_G` |
-| Pin 13 | GPIO 14 | Contôle du moteur droit  | `STEP_D` |  |  |
-| Pin 14 | GPIO 12 | Réservée |  | Configuration de la tension d'alimentation | X |
-| Pin 15 | N/A | Alimentation | `GND` | | |
-| Pin 16 | GPIO 13 | VSPI | `CS2` | Chip Select 2 SPI |  |
-| Pin 17 | GPIO 9 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 18 | GPIO 10 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 19 | GPIO 11 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 20 | GPIO 6 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 21 | GPIO 7 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 22 | GPIO 8 | Flash interne |  | Ne pas réutiliser |  |
-| Pin 23 | GPIO 15 | Bouton 1 | `B1` |  | X |
-| Pin 24 | GPIO 2 |  Bouton 2 | `B2` |  | X |
-| Pin 25 | GPIO 0 | Démarrage | `BOOT` | Boot SPI ou Upload | X |
-| Pin 26 | GPIO 4 | data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
-| Pin 27 | GPIO 16 | Contôle du moteur gauche  | `DIR_G` | |
-| Pin 28 | GPIO 17 | Contôle du moteur droit  | `DIR_D` | |
-| Pin 29 | GPIO 5 | VSPI | `CS1` | Chip Select 1 SPI | X |
-| Pin 30 | GPIO 18 | VSPI | `SCK` | Horloge SPI | |
-| Pin 31 | GPIO 19 | VSPI | `MISO` | Entrée SPI | |
-| Pin 32 | N/A | NC | Aucun | Non connectée | |
-| Pin 33 | GPIO 21 | I2C | `I2C_SDA` | Signal de données I2C | |
-| Pin 34 | GPIO 3 | UART | `RXD0` | Broche de reception | |
-| Pin 35 | GPIO 1 | UART | `TXD0` | Broche d'émission | |
-| Pin 36 | GPIO 22 | I2C | `I2C_SCL` | Signal d'horloge I2C | |
-| Pin 37 | GPIO 23 | VSPI | `MOSI` | Sortie SPI | |
-| Pin 38 | N/A | Alimentation | `GND` | | |
-| Pin 39 | N/A | Alimentation | `GND` | | |
+| # Pin | GPIO | TYPE | Mode | Signal | Commentaire | Strapping |
+| --- | --- | --- | --- | --- | --- | --- |
+| Pin 1 | N/A |P|  Alimentation | `GND` | | |
+| Pin 2 | N/A |P|  Alimentation | `3V3` | | |
+| Pin 3 | N/A |I|  Contrôle | `RESET` | Enable | |
+| Pin 4 | GPIO 36 |I|  Bouton 1 | `B1` |
+| Pin 5 | GPIO 39 |I|  Bouton 2 | `B2` |
+| Pin 6 | GPIO 34 |I| | |
+| Pin 7 | GPIO 35 |I|  |  |
+| Pin 8 | GPIO 32 |I/O|  Enables des moteurs  | `EN_MOTEURS` |
+| Pin 9 | GPIO 33 |I/O|  Contôle du moteur gauche  | `MS1_G` |
+| Pin 10 | GPIO 25 |I/O|  Contôle du moteur gauche  | `MS2_G` |
+| Pin 11 | GPIO 26 |I/O|  Contôle du moteur gauche  | `MS3_G` |
+| Pin 12 | GPIO 27 |I/O|  Contôle du moteur gauche  | `STEP_G` |
+| Pin 13 | GPIO 14 |I/O|  Contôle du moteur droit  | `STEP_D` |  |  |
+| Pin 14 | GPIO 12 |I/O|  Réservée |  | Configuration de la tension d'alimentation | X |
+| Pin 15 | N/A |P|  Alimentation | `GND` | | |
+| Pin 16 | GPIO 13 |I/O|  Contôle du moteur droit | `MS1_D` | |  |
+| Pin 17 | GPIO 9 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 18 | GPIO 10 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 19 | GPIO 11 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 20 | GPIO 6 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 21 | GPIO 7 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 22 | GPIO 8 |-|  Flash interne |  | Ne pas réutiliser |  |
+| Pin 23 | GPIO 15 |I/O|  Contôle du moteur droit  | `MS2_D` |  | X |
+| Pin 24 | GPIO 2 |I/O|   Contôle du moteur droit  | `MS3_D` |  | X |
+| Pin 25 | GPIO 0 |I/O|  Démarrage | `BOOT` | Boot SPI ou Upload | X |
+| Pin 26 | GPIO 4 |I/O|  data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
+| Pin 27 | GPIO 16 |I/O|  Contôle du moteur gauche  | `DIR_G` | |
+| Pin 28 | GPIO 17 |I/O|  Contôle du moteur droit  | `DIR_D` | |
+| Pin 29 | GPIO 5 |I/O|  VSPI | `CS1` | Chip Select 1 SPI | X |
+| Pin 30 | GPIO 18 |I/O|  VSPI | `SCK` | Horloge SPI | |
+| Pin 31 | GPIO 19 |I/O|  VSPI | `MISO` | Entrée SPI | |
+| Pin 32 | N/A |-|  NC | Aucun | Non connectée | |
+| Pin 33 | GPIO 21 |I/O|  I2C | `I2C_SDA` | Signal de données I2C | |
+| Pin 34 | GPIO 3 |I/O|  UART | `RXD0` | Broche de reception | |
+| Pin 35 | GPIO 1 |I/O|  UART | `TXD0` | Broche d'émission | |
+| Pin 36 | GPIO 22 |I/O|  I2C | `I2C_SCL` | Signal d'horloge I2C | |
+| Pin 37 | GPIO 23 |I/O|  VSPI | `MOSI` | Sortie SPI | |
+| Pin 38 | N/A |P|  Alimentation | `GND` | | |
+| Pin 39 | N/A |THERMAL PAD|  Alimentation | `GND` | | |
 
 
 
