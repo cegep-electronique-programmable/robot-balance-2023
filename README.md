@@ -56,10 +56,10 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 6 | GPIO 34 |I| | |
 | Pin 7 | GPIO 35 |I|  |  |
 | Pin 8 | GPIO 32 |I/O|  Enables des moteurs  | `EN_MOTEURS` |
-| Pin 9 | GPIO 33 |I/O|  Contôle du moteur droit  | `MS3_D` |
-| Pin 10 | GPIO 25 |I/O|  Contôle du moteur droit  | `MS2_D` |
-| Pin 11 | GPIO 26 |I/O|  Contôle du moteur droit  | `MS1_D` |
-| Pin 12 | GPIO 27 |I/O|  Contôle du moteur droit  | `STEP_D` |
+| Pin 9 | GPIO 33 |I/O|  Contôle du moteur droit  | `STEP_D` |
+| Pin 10 | GPIO 25 |I/O|  Contôle du moteur droit  | `MS3_D` |
+| Pin 11 | GPIO 26 |I/O|  Contôle du moteur droit  | `MS2_D` |
+| Pin 12 | GPIO 27 |I/O|  Contôle du moteur droit  | `MS1_D` |
 | Pin 13 | GPIO 14 |I/O|  Contôle du moteur gauche  | `STEP_G` |  |  |
 | Pin 14 | GPIO 12 |I/O|  Réservée |  | Configuration de la tension d'alimentation | X |
 | Pin 15 | N/A |P|  Alimentation | `GND` | | |
