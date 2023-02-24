@@ -60,7 +60,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 10 | GPIO 25 |I/O|  Contôle du moteur droit  | `STEP_D` |
 | Pin 11 | GPIO 26 |I/O|  Contôle du moteur droit  | `MS3_D` |
 | Pin 12 | GPIO 27 |I/O|  Contôle du moteur droit  | `MS2_D` |
-| Pin 13 | GPIO 14 |I/O|  Contôle du moteur gauche  | `MS1_D` |  |  |
+| Pin 13 | GPIO 14 |I/O|  Contôle du moteur droit  | `MS1_D` |  |  |
 | Pin 14 | GPIO 12 |I/O|  Réservée |  | Configuration de la tension d'alimentation | X |
 | Pin 15 | N/A |P|  Alimentation | `GND` | | |
 | Pin 16 | GPIO 13 |I/O|  Contôle du moteur gauche | `MS3_G` | |  |
@@ -74,8 +74,8 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 24 | GPIO 2 |I/O|   Contôle du moteur gauche  | `MS1_G` |  | X |
 | Pin 25 | GPIO 0 |I/O|  Démarrage | `BOOT` | Boot SPI ou Upload | X |
 | Pin 26 | GPIO 4 |I/O|  data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
-| Pin 27 | GPIO 16 |I/O|  Contôle du moteur gauche  | `DIR_G` | |
-| Pin 28 | GPIO 17 |I/O|  Contôle du moteur droit  | `STEP_G` | |
+| Pin 27 | GPIO 16 |I/O|  Contôle du moteur gauche  | `STEP_G` | |
+| Pin 28 | GPIO 17 |I/O|  Contôle du moteur gauche| `DIR_G` | |
 | Pin 29 | GPIO 5 |I/O|  VSPI | `CS1` | Chip Select 1 SPI | X |
 | Pin 30 | GPIO 18 |I/O|  VSPI | `SCK` | Horloge SPI | |
 | Pin 31 | GPIO 19 |I/O|  VSPI | `MISO` | Entrée SPI | |
