@@ -24,7 +24,7 @@ La carte électronique est développée dans Fusion 360 et elle est basée sur :
 * Deux commandes moteur Polulu A4988.
 * Un capteur ADXL.
 * Un capteur CMPS12.
-* Des régulateurs d'alimentation xxx et yyy.
+* Des régulateurs d'alimentation AP63203 et AP2112K.
 
 ## Firmware
 
