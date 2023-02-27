@@ -53,8 +53,8 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 | Pin 3 | N/A |I|  Contrôle | `RESET` | Enable | |
 | Pin 4 | GPIO 36 |I|  Bouton 1 | `B1` |
 | Pin 5 | GPIO 39 |I|  Bouton 2 | `B2` |
-| Pin 6 | GPIO 34 |I| | |
-| Pin 7 | GPIO 35 |I|  |  |
+| Pin 6 | GPIO 34 |I| TP1 |  `TP1` |
+| Pin 7 | GPIO 35 |I| TP2 | `TP2` |
 | Pin 8 | GPIO 32 |I/O|  Enables des moteurs  | `EN_MOTEURS` |
 | Pin 9 | GPIO 33 |I/O|  Contôle du moteur droit  | `DIR_D` |
 | Pin 10 | GPIO 25 |I/O|  Contôle du moteur droit  | `STEP_D` |
