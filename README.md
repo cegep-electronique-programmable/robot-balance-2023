@@ -1,7 +1,7 @@
 # Robot Balance 2023
 
 Informations techniques du robot qui tient en équilibre sur deux roues.
-[Ajouter un photo ici]
+robot-balance-2023/Media/render v1.png
 
 # Présentation
 
