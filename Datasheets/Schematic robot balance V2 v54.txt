@@ -1,4 +1,4 @@
-Partlist exported from C:/Users/pguimond/AppData/Local/Temp/Neutron/ElectronFileOutput/4628/sch-40d0e1f3-a85c-49c6-88fd-c311d82954b0/Schematic robot balance V2 v54.sch at 2023-02-28 12:29
+Partlist exported from C:/Users/pguimond/AppData/Local/Temp/Neutron/ElectronFileOutput/4628/sch-40d0e1f3-a85c-49c6-88fd-c311d82954b0/Schematic robot balance V2 v54.sch at 2023-02-28 12:30
 
 Qty Value                Device                    Package              Parts                       Description                      CATEGORY DESCRIPTION          MANUFACTURER MPN     OPERATING_TEMPERATURE PARTREV PART_STATUS ROHS_COMPLIANCE SERIES  STANDARD                     SUB-CATEGORY THERMALLOSS TYPE
 4                        CERAMIC_CAPACITOR0603     0603                 C17, C18, C23, C24                                                                                                                                                                                                                          
