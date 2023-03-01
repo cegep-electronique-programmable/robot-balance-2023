@@ -1,7 +1,7 @@
 # Robot Balance 2023
 
 Informations techniques du robot qui tient en équilibre sur deux roues.
-![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v1.png?raw=true)
+![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v2.png?raw=true)
 
 # Présentation
 
