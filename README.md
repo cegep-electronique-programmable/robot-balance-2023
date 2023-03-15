@@ -43,7 +43,16 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 ### Composants principaux
 
-* [ ] Section à compléter
+La carte est conçue avec les composants principaux suivants :
+
+- 1 x Microcontrôleur ESP32-WROOM
+- 2 x Driver de stepper motor Polulu A4988
+- 1 x Accéleromètre, inclinomètre et magnétomètre combiné CMPS12
+- 1 x Accéleromètre TBD
+- 2 x Boutons utilisateurs
+- 5 x DEL utilisateur RGB en série
+- 2 x Connecteur I2C
+- 1 x Connecteur SPI
 
 ### Choix des broches du microcontrôleur
 
