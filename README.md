@@ -1,7 +1,6 @@
 # Robot Balance 2023
 
 Informations techniques du robot qui tient en équilibre sur deux roues.
-![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v2.png?raw=true)
 
 # Présentation
 
@@ -39,6 +38,8 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 * [ ] Section à compléter
 
 ## Électronique
+
+![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v2.png?raw=true)
 
 ### Composants principaux
 
