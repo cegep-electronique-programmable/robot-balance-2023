@@ -2,21 +2,21 @@
 
 Informations techniques du robot qui tient en équilibre sur deux roues.
 
-# Présentation
+## Présentation
 
 Le **Robot Balance 2023** est une évolution du robot 2017. Les objectifs de la nouvelles version sont :
 * Enlever les fils d'alimentation : Le robot est maintenant alimenté par une **batterie 12V**.
 * Surélever le centre de gravité pour **améliorer le contrôle**. La batterie est situé en haut du robot.
 * Pouvoir commander et observer le robot sans fils : La carte LPC1768 est remplacée par une carte à base de **ESP32 (Wifi & Bluetooth)**.
 
-# Aperçu du développement
+## Aperçu du développement
 
-## Mécanique 
+### Mécanique 
 
 La mécanique est développée dans Fusion 360 et elle est basée sur un cadre en extrusions d'aluminium.
 Les roues sont entrainées par des moteurs pas-à-pas de type NEMA-17.
 
-## Électronique
+### Électronique
 
 La carte électronique est développée dans Fusion 360 et elle est basée sur :
 * Un microcontrôleur ESP32-WROOM-32.
@@ -25,23 +25,23 @@ La carte électronique est développée dans Fusion 360 et elle est basée sur :
 * Un capteur CMPS12.
 * Des régulateurs d'alimentation AP63203 et AP2112K.
 
-## Firmware
+### Firmware
 
 Le firmware est développé à l'aide de l'outil PlatformIO. Nous utilisons le framework (TBD: Arduino ou IDK).
 
 Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-Dérivé (PID).
 
-# Description détaillée
+## Description détaillée
 
-## Mécanique 
+### Mécanique 
 
 * [ ] Section à compléter
 
-## Électronique
+### Électronique
 
 ![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v2.png?raw=true)
 
-### Composants principaux
+#### Composants principaux
 
 La carte est conçue avec les composants principaux suivants :
 
@@ -54,7 +54,7 @@ La carte est conçue avec les composants principaux suivants :
 - 2 x Connecteur I2C
 - 1 x Connecteur SPI
 
-### Choix des broches du microcontrôleur
+#### Choix des broches du microcontrôleur
 
 | # Pin | GPIO | TYPE | Mode | Signal | Commentaire |
 | --- | --- | --- | --- | --- | --- |
@@ -101,7 +101,7 @@ La carte est conçue avec les composants principaux suivants :
 
 
 
-### SPI 🟠
+#### SPI 🟠
 
 SPI 0 et 1 sont utilisés à l'interne du module.
 
@@ -111,7 +111,7 @@ On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le 
 
 Les infos sur le shcéma adafruit placent les sorties MOSI à la pin 30 (GPIO 18), MISO à la pin 31 (GPIO 19) et SCK à la pin 29 (GPIO 5)
 
-### I2C 🔴
+#### I2C 🔴
 
 Différentes info :
 * [Schéma Adafruit](https://learn.adafruit.com/assets/41630) :
@@ -131,12 +131,12 @@ Je ne comprends pas encore à quel point le MUX (RTC_MUX ?) permet de faire des 
 
 [ESP32 Manuel de Référence Technique - Section 11](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#i2c)
 
-### Circuit de décharge 
+#### Circuit de décharge 
 
 ![image](https://user-images.githubusercontent.com/5272111/214639099-4ffefefb-0941-4416-903f-3794575252fe.png)
 
 
-### Guide pour le PCB Layout
+#### Guide pour le PCB Layout
 
 PCB à 4 couches :
 | Couche | Signaux |
@@ -149,7 +149,7 @@ PCB à 4 couches :
 Garder 15 mm d'espaces sur les 3 côtés de l'antenne.
 
 
-## Firmware
+### Firmware
 
 * [ ] Section à compléter
 
