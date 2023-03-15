@@ -56,11 +56,11 @@ La carte est conçue avec les composants principaux suivants :
 
 ### Choix des broches du microcontrôleur
 
-| # Pin | GPIO | TYPE | Mode | Signal | Commentaire | Strapping |
-| --- | --- | --- | --- | --- | --- | --- |
-| Pin 1 | N/A | P |  Alimentation | `GND` | | |
-| Pin 2 | N/A |P|  Alimentation | `3V3` | | |
-| Pin 3 | N/A |I|  Contrôle | `RESET` | Enable | |
+| # Pin | GPIO | TYPE | Mode | Signal | Commentaire |
+| --- | --- | --- | --- | --- | --- |
+| Pin 1 | N/A | P |  Alimentation | `GND` |
+| Pin 2 | N/A |P|  Alimentation | `3V3` |
+| Pin 3 | N/A |I|  Contrôle | `RESET` | Enable |
 | Pin 4 | GPIO 36 |I|  Bouton 1 | `B1` |
 | Pin 5 | GPIO 39 |I|  Bouton 2 | `B2` |
 | Pin 6 | GPIO 34 |I| TP1 |  `TP1` |
@@ -71,32 +71,32 @@ La carte est conçue avec les composants principaux suivants :
 | Pin 11 | GPIO 26 |I/O|  Contôle du moteur droit  | `MS3_D` |
 | Pin 12 | GPIO 27 |I/O|  Contôle du moteur droit  | `MS2_D` |
 | Pin 13 | GPIO 14 |I/O|  Contôle du moteur droit  | `MS1_D` |  |  |
-| Pin 14 | GPIO 12 |I/O|  Réservée |  | Configuration de la tension d'alimentation | X |
-| Pin 15 | N/A |P|  Alimentation | `GND` | | |
-| Pin 16 | GPIO 13 |I/O|  Contôle du moteur gauche | `MS3_G` | |  |
-| Pin 17 | GPIO 9 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 18 | GPIO 10 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 19 | GPIO 11 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 20 | GPIO 6 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 21 | GPIO 7 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 22 | GPIO 8 |-|  Flash interne |  | Ne pas réutiliser |  |
-| Pin 23 | GPIO 15 |I/O|  Contôle du moteur gauche  | `MS2_G` |  | X |
-| Pin 24 | GPIO 2 |I/O|   Contôle du moteur gauche  | `MS1_G` |  | X |
-| Pin 25 | GPIO 0 |I/O|  Démarrage | `BOOT` | Boot SPI ou Upload | X |
+| Pin 14 | GPIO 12 |I/O (Strap) |  Réservée |  | Configuration de la tension d'alimentation |
+| Pin 15 | N/A |P|  Alimentation | `GND` |
+| Pin 16 | GPIO 13 |I/O|  Contôle du moteur gauche | `MS3_G` |
+| Pin 17 | GPIO 9 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 18 | GPIO 10 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 19 | GPIO 11 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 20 | GPIO 6 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 21 | GPIO 7 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 22 | GPIO 8 |-|  Flash interne |  | Ne pas réutiliser |
+| Pin 23 | GPIO 15 |I/O (Strap) |  Contôle du moteur gauche  | `MS2_G` |
+| Pin 24 | GPIO 2 |I/O (Strap) |   Contôle du moteur gauche  | `MS1_G` |
+| Pin 25 | GPIO 0 |I/O (Strap) |  Démarrage | `BOOT` | Boot SPI ou Upload |
 | Pin 26 | GPIO 4 |I/O|  data neopixel | `DATA_LED` | Sortie pour bus NeoPixels |
-| Pin 27 | GPIO 16 |I/O|  Contôle du moteur gauche  | `STEP_G` | |
-| Pin 28 | GPIO 17 |I/O|  Contôle du moteur gauche| `DIR_G` | |
-| Pin 29 | GPIO 5 |I/O|  VSPI | `CS1` | Chip Select 1 SPI | X |
-| Pin 30 | GPIO 18 |I/O|  VSPI | `SCK` | Horloge SPI | |
-| Pin 31 | GPIO 19 |I/O|  VSPI | `MISO` | Entrée SPI | |
-| Pin 32 | N/A |-|  NC | Aucun | Non connectée | |
-| Pin 33 | GPIO 21 |I/O|  I2C | `I2C_SDA` | Signal de données I2C | |
-| Pin 34 | GPIO 3 |I/O|  UART | `RXD0` | Broche de reception | |
-| Pin 35 | GPIO 1 |I/O|  UART | `TXD0` | Broche d'émission | |
-| Pin 36 | GPIO 22 |I/O|  I2C | `I2C_SCL` | Signal d'horloge I2C | |
-| Pin 37 | GPIO 23 |I/O|  VSPI | `MOSI` | Sortie SPI | |
-| Pin 38 | N/A |P|  Alimentation | `GND` | | |
-| Pin 39 | N/A |THERMAL PAD|  Alimentation | `GND` | | |
+| Pin 27 | GPIO 16 |I/O|  Contôle du moteur gauche  | `STEP_G` |
+| Pin 28 | GPIO 17 |I/O|  Contôle du moteur gauche| `DIR_G` |
+| Pin 29 | GPIO 5 |I/O (Strap) |  VSPI | `CS1` | Chip Select 1 SPI |
+| Pin 30 | GPIO 18 |I/O|  VSPI | `SCK` | Horloge SPI |
+| Pin 31 | GPIO 19 |I/O|  VSPI | `MISO` | Entrée SPI |
+| Pin 32 | N/A |-|  NC | Aucun | Non connectée |
+| Pin 33 | GPIO 21 |I/O|  I2C | `I2C_SDA` | Signal de données I2C |
+| Pin 34 | GPIO 3 |I/O|  UART | `RXD0` | Broche de reception |
+| Pin 35 | GPIO 1 |I/O|  UART | `TXD0` | Broche d'émission |
+| Pin 36 | GPIO 22 |I/O|  I2C | `I2C_SCL` | Signal d'horloge I2C |
+| Pin 37 | GPIO 23 |I/O|  VSPI | `MOSI` | Sortie SPI |
+| Pin 38 | N/A |P|  Alimentation | `GND` |
+| Pin 39 | N/A |THERMAL PAD|  Alimentation | `GND` |
 
 
 
