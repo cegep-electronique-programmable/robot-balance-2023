@@ -15,9 +15,9 @@
 // Moteur droit
 #define GPIO_DIR_D              33
 #define GPIO_STEP_D             25
-#define MS1_D                   14
-#define MS2_D                   27
-#define MS3_D                   26
+#define GPIO_MS1_D              14
+#define GPIO_MS2_D              27
+#define GPIO_MS3_D              26
 
 // Moteur gauche
 #define GPIO_DIR_G              17
