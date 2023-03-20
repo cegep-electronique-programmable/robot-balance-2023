@@ -95,4 +95,19 @@ void setup() {
 
 void loop() {
   printf(".\r\n");
+
+  // Défilement des DEL bleues en attendant une connexion sans fil
+  int pixel = 0;
+  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+    if (i == pixel) {
+      pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0xFF)); // Pixel bleu
+    }
+    else {
+      pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00)); // Pixel éteint
+    }
+    pixels.show();
+  }
+  pixel = pixel++ % NEOPIXEL_COUNT;
+
+  delay(200);
 }
