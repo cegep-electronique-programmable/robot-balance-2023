@@ -66,7 +66,7 @@ int initialisationUART(void) {
   return 0;
 }
 
-int inialisationsNeoPixel(void) {
+int initialisationsNeoPixel(void) {
   pixels.begin();
   pixels.clear();
   pixels.setBrightness(0xFF);
@@ -78,19 +78,42 @@ int inialisationsNeoPixel(void) {
   return 0;
 }
 
-void setup() {
-  inialisationsNeoPixel();
-  initialisationUART();
-  initialisationGPIO();
-
+void initialisation_succes(void) {
   // Toutes les DEL en vert après l'initialisation
-  delay(1000);
   for (int i = 0; i < NEOPIXEL_COUNT; i++) {
     pixels.setPixelColor(i, pixels.Color(0x00, 0xFF, 0x00));
   }
   pixels.show();
   delay(1000);
+}
 
+void initialisation_echec(void) {
+  // Toutes les DEL en rouge après l'initialisation
+  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+    pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
+  }
+
+  for (int i = 0; i < 20; i++) {
+    pixels.show();
+    delay(100);
+    pixels.clear();
+    delay(100);
+  }
+  
+}
+
+void setup() {
+  int initilisation_reussie = 0;
+  initilisation_reussie += initialisationsNeoPixel();
+  initilisation_reussie += initialisationUART();
+  initilisation_reussie += initialisationGPIO();
+
+  if (initilisation_reussie == 0) {
+    initialisation_succes();
+  }
+  else {
+    initialisation_echec();
+  }
 }
 
 void loop() {
