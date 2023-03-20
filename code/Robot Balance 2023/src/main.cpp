@@ -4,6 +4,7 @@
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
+int pixel = 0;
 
 // Fonction d'initialisation des GPIO
 int initialisationGPIO(void) {
@@ -108,6 +109,7 @@ void setup() {
   initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
 
+  delay(1000);
   if (initilisation_reussie == 0) {
     initialisation_succes();
   }
@@ -120,7 +122,7 @@ void loop() {
   printf(".\r\n");
 
   // Défilement des DEL bleues en attendant une connexion sans fil
-  int pixel = 0;
+  
   for (int i = 0; i < NEOPIXEL_COUNT; i++) {
     if (i == pixel) {
       pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0xFF)); // Pixel bleu
@@ -130,7 +132,11 @@ void loop() {
     }
     pixels.show();
   }
-  pixel = pixel++ % NEOPIXEL_COUNT;
 
-  delay(200);
+  pixel++;
+  if (pixel >= NEOPIXEL_COUNT) {
+    pixel = 0;
+  }
+
+  delay(100);
 }
