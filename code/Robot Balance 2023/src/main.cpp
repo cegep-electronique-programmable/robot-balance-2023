@@ -1,5 +1,9 @@
 #include <Arduino.h>
 #include "board_mapping.h"
+#include <Adafruit_NeoPixel.h>
+
+// Instanciation des dels
+Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 
 // Fonction d'initialisation des GPIO
 int initialisationGPIO(void) {
@@ -62,9 +66,31 @@ int initialisationUART(void) {
   return 0;
 }
 
+int inialisationsNeoPixel(void) {
+  pixels.begin();
+  pixels.clear();
+  pixels.setBrightness(0xFF);
+  // Toutes les DEL en rouge pendant l'initialisation
+  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+    pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
+  }
+  pixels.show();
+  return 0;
+}
+
 void setup() {
+  inialisationsNeoPixel();
   initialisationUART();
   initialisationGPIO();
+
+  // Toutes les DEL en vert après l'initialisation
+  delay(1000);
+  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+    pixels.setPixelColor(i, pixels.Color(0x00, 0xFF, 0x00));
+  }
+  pixels.show();
+  delay(1000);
+
 }
 
 void loop() {

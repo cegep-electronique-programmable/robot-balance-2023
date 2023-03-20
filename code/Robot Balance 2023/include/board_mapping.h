@@ -28,6 +28,8 @@
 
 // LED
 #define GPIO_DATA_LED           4
+#define NEOPIXEL_PIN            GPIO_DATA_LED
+#define NEOPIXEL_COUNT          5 
 
 // SPI
 #define GPIO_VPSI_CS1           5
