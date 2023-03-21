@@ -1,6 +1,11 @@
 // Broches utilisées par le robot
 // https://github.com/cegep-electronique-programmable/robot-balance-2023/#choix-des-broches-du-microcontr%C3%B4leur
 
+
+// UART
+#define GPIO_UART_TX            1
+#define GPIO_UART_RX            3
+
 // Boutons utilisateurs
 #define GPIO_B1                 36  // Input only
 #define GPIO_B2                 39  // Input only

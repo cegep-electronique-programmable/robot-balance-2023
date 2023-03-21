@@ -1,6 +1,12 @@
 #include <Arduino.h>
-#include "board_mapping.h"
 #include <Adafruit_NeoPixel.h>
+#include <WiFi.h>
+#include <Arduino_MultiWiFi.h>
+
+#include "board_mapping.h"
+
+// Wifi
+MultiWiFi multiWifi;
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -62,6 +68,7 @@ int initialisationGPIO(void) {
 
 // Fonction d'initialisation de l'UART
 int initialisationUART(void) {
+  Serial.setPins(GPIO_UART_TX, GPIO_UART_RX);
   Serial.begin(115200);
   printf("Robot Balance 2023\r\n");
   return 0;
@@ -77,6 +84,21 @@ int initialisationsNeoPixel(void) {
   }
   pixels.show();
   return 0;
+}
+
+int initialisationWifi(void) {
+    multiWifi.add("iPhone SE 2020", "boriasse");
+
+    // Connect to the first available network
+    Serial.println("Looking for a network...");
+    if (multiWifi.run() == WL_CONNECTED) {
+        Serial.print("Successfully connected to network: ");
+        Serial.println(WiFi.SSID());
+        return 0;
+    } else {
+        Serial.println("Failed to connect to a WiFi network");
+        return 1;
+    }
 }
 
 void initialisation_succes(void) {
@@ -95,9 +117,11 @@ void initialisation_echec(void) {
   }
 
   for (int i = 0; i < 20; i++) {
+    pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
     pixels.show();
     delay(100);
-    pixels.clear();
+    pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00));
+    pixels.show();
     delay(100);
   }
   
@@ -108,6 +132,7 @@ void setup() {
   initilisation_reussie += initialisationsNeoPixel();
   initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
+  initilisation_reussie += initialisationWifi();
 
   delay(1000);
   if (initilisation_reussie == 0) {
