@@ -1,12 +1,12 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 #include <WiFi.h>
-#include <Arduino_MultiWiFi.h>
 
 #include "board_mapping.h"
+#include "wifi_network.h"
 
 // Wifi
-MultiWiFi multiWifi;
+int status = WL_IDLE_STATUS; 
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -87,18 +87,46 @@ int initialisationsNeoPixel(void) {
 }
 
 int initialisationWifi(void) {
-    multiWifi.add("iPhone SE 2020", "boriasse");
+    status = WiFi.begin(WIFI_SSID, WIFI_PASS);
+    return 0;
+}
 
-    // Connect to the first available network
-    Serial.println("Looking for a network...");
-    if (multiWifi.run() == WL_CONNECTED) {
-        Serial.print("Successfully connected to network: ");
-        Serial.println(WiFi.SSID());
-        return 0;
-    } else {
-        Serial.println("Failed to connect to a WiFi network");
-        return 1;
+int connexionWifi(void) {
+  Serial.println("Recherche d'un reseau Wifi...");
+  Serial.print("Tentative sur le reseau : ");
+  Serial.println(WIFI_SSID);
+
+  while ( status != WL_CONNECTED) {
+    status = WiFi.begin(WIFI_SSID, WIFI_PASS);
+
+
+    // Défilement des DEL bleues en attendant une connexion sans fil
+    for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+      if (i == pixel) {
+        pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0xFF)); // Pixel bleu
+      }
+      else {
+        pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00)); // Pixel éteint
+      }
+      pixels.show();
     }
+
+    pixel++;
+    if (pixel >= NEOPIXEL_COUNT) {
+      pixel = 0;
+    }
+
+    delay(100);
+
+  }
+
+  Serial.print("Connexion Wifi reussie : ");
+  Serial.println(WiFi.SSID());
+
+  pixels.clear();
+  pixels.show();
+
+  return 0;
 }
 
 void initialisation_succes(void) {
@@ -132,9 +160,10 @@ void setup() {
   initilisation_reussie += initialisationsNeoPixel();
   initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
-  initilisation_reussie += initialisationWifi();
+  //initilisation_reussie += initialisationWifi();
 
-  delay(1000);
+  delay(500);
+
   if (initilisation_reussie == 0) {
     initialisation_succes();
   }
@@ -144,24 +173,14 @@ void setup() {
 }
 
 void loop() {
-  printf(".\r\n");
-
-  // Défilement des DEL bleues en attendant une connexion sans fil
-  
-  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
-    if (i == pixel) {
-      pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0xFF)); // Pixel bleu
-    }
-    else {
-      pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00)); // Pixel éteint
-    }
-    pixels.show();
+  //connexionWifi();
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  Serial.print("Connecting to WiFi ..");
+  while (WiFi.status() != WL_CONNECTED) {
+    Serial.print('.');
+    delay(1000);
   }
+  Serial.println(WiFi.localIP());
 
-  pixel++;
-  if (pixel >= NEOPIXEL_COUNT) {
-    pixel = 0;
-  }
-
-  delay(100);
 }
