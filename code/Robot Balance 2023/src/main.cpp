@@ -86,6 +86,8 @@ int initialisationsNeoPixel(void) {
   return 0;
 }
 
+
+
 int initialisationWifi(void) {
     status = WiFi.begin(WIFI_SSID, WIFI_PASS);
     return 0;
@@ -173,14 +175,9 @@ void setup() {
 }
 
 void loop() {
-  //connexionWifi();
-  WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_PASS);
-  Serial.print("Connecting to WiFi ..");
-  while (WiFi.status() != WL_CONNECTED) {
-    Serial.print('.');
-    delay(1000);
-  }
-  Serial.println(WiFi.localIP());
+  int b1 = digitalRead(GPIO_B1);
+  int b2 = digitalRead(GPIO_B2);
 
+  printf("B!: %d B2: %d\r\n", b1, b2);
+  delay(200);
 }
