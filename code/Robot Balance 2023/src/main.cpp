@@ -1,12 +1,15 @@
 #include <Arduino.h>
 #include <Adafruit_NeoPixel.h>
 #include <WiFi.h>
+#include <Wire.h>
 
 #include "board_mapping.h"
 #include "wifi_network.h"
 
 // Wifi
 int status = WL_IDLE_STATUS; 
+
+
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -87,7 +90,6 @@ int initialisationsNeoPixel(void) {
 }
 
 
-
 int initialisationWifi(void) {
     status = WiFi.begin(WIFI_SSID, WIFI_PASS);
     return 0;
@@ -163,6 +165,9 @@ void setup() {
   initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
   //initilisation_reussie += initialisationWifi();
+  
+  // I2C
+  Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
   delay(500);
 
@@ -175,9 +180,38 @@ void setup() {
 }
 
 void loop() {
+  /*
   int b1 = digitalRead(GPIO_B1);
   int b2 = digitalRead(GPIO_B2);
 
   printf("B!: %d B2: %d\r\n", b1, b2);
+  */
+  Wire.beginTransmission(0x60);
+  Wire.write(2);
+  int nackCatcher = Wire.endTransmission();
+  // Return if we have a connection problem 
+  if(nackCatcher != 0){
+    printf("NACK\r\n");
+  }
+  
+  // Request 2 bytes from CMPS12
+  int nReceived = Wire.requestFrom(0x60 , 2);
+
+  // Something has gone wrong
+  if (nReceived != 2) 
+  {
+    printf("Erreur de reception\r\n");
+  }
+
+  // Read the values
+  uint8_t _byteHigh = Wire.read(); 
+  uint8_t _byteLow = Wire.read();
+
+  // Calculate full bearing
+  uint16_t _bearing = ((_byteHigh<<8) + _byteLow) / 10;
+
+  printf("Bearing: %d\r\n", _bearing);
+ 
   delay(200);
+
 }
