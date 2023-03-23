@@ -111,29 +111,6 @@ On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le 
 
 Les infos sur le shcéma adafruit placent les sorties MOSI à la pin 30 (GPIO 18), MISO à la pin 31 (GPIO 19) et SCK à la pin 29 (GPIO 5)
 
-#### I2C 🔴
-
-Différentes info :
-* [Schéma Adafruit](https://learn.adafruit.com/assets/41630) :
-  * SCL Pin 36 IO22
-  * SDA Pin 37 IO23
-* [ESP32 Manuel de Référence Technique - Section 4.11](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi) :
-  * SCL GPIO 4 ou GPIO 2 -> Pin 26 ou 24
-  * SDA GPIO 0 ou GPIO 15 -> Pin 25 ou 23
-* Divers tutoriaux recommandent ([Par exemple](https://deepbluembedded.com/esp32-i2c-tutorial-change-pins-i2c-scanner-arduino/#I2C_Bus_Lines)):
-  * SCL GPIO 22
-  * SDA GPIO 21 
-  
-  ![image](https://user-images.githubusercontent.com/32198019/214665266-d51fead5-9cdc-4ce7-bf78-924b9762b46b.png)
-
-
-Je ne comprends pas encore à quel point le MUX (RTC_MUX ?) permet de faire des choix par firmware.
-
-[ESP32 Manuel de Référence Technique - Section 11](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#i2c)
-
-#### Circuit de décharge 
-
-![image](https://user-images.githubusercontent.com/5272111/214639099-4ffefefb-0941-4416-903f-3794575252fe.png)
 
 
 #### Guide pour le PCB Layout
@@ -149,9 +126,43 @@ PCB à 4 couches :
 Garder 15 mm d'espaces sur les 3 côtés de l'antenne.
 
 
-### Firmware
+### Microgiciel (Firmware)
 
-* [ ] Section à compléter
+#### Numéros de broches
+
+Les numéros de broches sont configurés dans le fichier `board_mapping.h`.
+
+
+#### UART
+
+Pensez à assigner les bons numéros de broches :
+
+```
+Serial.setPins(GPIO_UART_TX, GPIO_UART_RX);
+Serial.begin(115200);
+```
+
+Dans le fichier `platformio.ini`, utiliser la configuration suivante pour empêcher un `Reset` à l'ouverture du terminal :
+```
+monitor_rts = 0
+monitor_dtr = 0
+```
+
+
+#### I2C
+
+Pensez à assigner les bons numéros de broches :
+
+```
+Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
+```
+
+##### Adresses par défaut
+
+| Composant | Adresse | 
+| --- | --- | 
+| CMPS12 | 0x60 |
+| MCX6655 | 0x15 |
 
 # Références : 
 * [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
