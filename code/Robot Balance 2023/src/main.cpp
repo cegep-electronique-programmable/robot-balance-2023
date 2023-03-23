@@ -4,6 +4,7 @@
 #include <Wire.h>
 #include <SPI.h>
 #include "A4988.h"
+#include "MXC6655.h"
 
 #include "board_mapping.h"
 #include "wifi_network.h"
@@ -15,6 +16,9 @@ int status = WL_IDLE_STATUS;
 // Moteurs
 A4988 stepperG(STEPS_PAR_TOUR, GPIO_DIR_G, GPIO_STEP_G, GPIO_ENABLE_MOTEURS, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G);
 A4988 stepperD(STEPS_PAR_TOUR, GPIO_DIR_D, GPIO_STEP_D, GPIO_ENABLE_MOTEURS, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D);
+
+// Accéléromètre
+MXC6655 accel;
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -205,10 +209,21 @@ void setup()
   stepperD.begin(10);
   stepperD.setEnableActiveState(LOW);
   stepperD.enable();
+
+  
+  
+
+  
 }
 
 void loop()
 {
+  
+  accel.begin();
+  float acc = accel.getAccel(2);
+  printf("Accel: %f\r\n", acc);
+  delay(100);
+
   /*
   int b1 = digitalRead(GPIO_B1);
   int b2 = digitalRead(GPIO_B2);
@@ -216,7 +231,7 @@ void loop()
   printf("B!: %d B2: %d\r\n", b1, b2);
   */
 
-  int nReceived = 0;
+  //int nReceived = 0;
   /*
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
@@ -245,6 +260,7 @@ void loop()
   delay(200);
   */
 
+  /*
   // Accelerometre
   uint8_t mxc6655_data[I2C_MXC6655XA_REGISTER_LENGTH] = {0};
 
@@ -264,6 +280,7 @@ void loop()
     printf("Erreur\r\n");
 
   delay(200);
+  */
 
   /*
   stepperG.setMicrostep(1);
@@ -276,4 +293,6 @@ void loop()
   stepperG.rotate(-360);    // reverse revolution
   stepperD.rotate(-360);    // reverse revolution
   */
+
+
 }
