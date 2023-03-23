@@ -5,6 +5,8 @@
 
 #include "board_mapping.h"
 #include "wifi_network.h"
+#include "interfaces.h"
+
 
 // Wifi
 int status = WL_IDLE_STATUS; 
@@ -186,31 +188,37 @@ void loop() {
 
   printf("B!: %d B2: %d\r\n", b1, b2);
   */
-  Wire.beginTransmission(0x60);
-  Wire.write(2);
-  int nackCatcher = Wire.endTransmission();
+ // Wire.beginTransmission(0x60);
+ // Wire.write(0);
+ // int nackCatcher = Wire.endTransmission();
   // Return if we have a connection problem 
-  if(nackCatcher != 0){
-    printf("NACK\r\n");
-  }
+ 
+
+ Wire.beginTransmission(0x60);
+ Wire.write(0);
+ Wire.endTransmission();
   
-  // Request 2 bytes from CMPS12
-  int nReceived = Wire.requestFrom(0x60 , 2);
+  // Request 31 bytes from CMPS12
+  int nReceived = Wire.requestFrom(0x60 , I2C_CMPS12_REGISTER_LENGTH);
+  uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = { 0 };
+
+  nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
 
   // Something has gone wrong
-  if (nReceived != 2) 
+  if (nReceived != I2C_CMPS12_REGISTER_LENGTH) 
   {
     printf("Erreur de reception\r\n");
   }
+  else
+  {
+    for (int i = 0; i< I2C_CMPS12_REGISTER_LENGTH; i++)
+    {
+      printf("%02X ", data[i]);
+    }
+    printf("\r\n"); 
+  }
 
-  // Read the values
-  uint8_t _byteHigh = Wire.read(); 
-  uint8_t _byteLow = Wire.read();
-
-  // Calculate full bearing
-  uint16_t _bearing = ((_byteHigh<<8) + _byteLow) / 10;
-
-  printf("Bearing: %d\r\n", _bearing);
+  
  
   delay(200);
 
