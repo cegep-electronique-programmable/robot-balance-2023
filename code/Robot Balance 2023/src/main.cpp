@@ -211,14 +211,20 @@ void setup()
   stepperD.enable();
 
   
-  
+  SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 
   
 }
 
 void loop()
 {
-  
+  uint8_t * spi_data = (uint8_t *) "A";
+  digitalWrite(GPIO_VPSI_CS1, LOW); 
+  //SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+  SPI.writeBytes(spi_data, sizeof(spi_data));
+  //SPI.endTransaction();
+  digitalWrite(GPIO_VPSI_CS1, HIGH); 
+
   accel.begin();
   float acc = accel.getAccel(2);
   printf("Accel: %f\r\n", acc);
