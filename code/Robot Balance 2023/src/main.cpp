@@ -9,9 +9,8 @@
 #include "wifi_network.h"
 #include "interfaces.h"
 
-
 // Wifi
-int status = WL_IDLE_STATUS; 
+int status = WL_IDLE_STATUS;
 
 // Moteurs
 A4988 stepperG(STEPS_PAR_TOUR, GPIO_DIR_G, GPIO_STEP_G, GPIO_ENABLE_MOTEURS, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G);
@@ -22,7 +21,8 @@ Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 int pixel = 0;
 
 // Fonction d'initialisation des GPIO
-int initialisationGPIO(void) {
+int initialisationGPIO(void)
+{
 
   // Boutons utilisateurs (entrées seulement)
   pinMode(GPIO_B1, INPUT);
@@ -76,58 +76,65 @@ int initialisationGPIO(void) {
 }
 
 // Fonction d'initialisation de l'UART
-int initialisationUART(void) {
+int initialisationUART(void)
+{
   Serial.setPins(GPIO_UART_TX, GPIO_UART_RX);
   Serial.begin(115200);
   printf("Robot Balance 2023\r\n");
   return 0;
 }
 
-int initialisationsNeoPixel(void) {
+int initialisationsNeoPixel(void)
+{
   pixels.begin();
   pixels.clear();
   pixels.setBrightness(0xFF);
   // Toutes les DEL en rouge pendant l'initialisation
-  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+  for (int i = 0; i < NEOPIXEL_COUNT; i++)
+  {
     pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
   }
   pixels.show();
   return 0;
 }
 
-
-int initialisationWifi(void) {
-    status = WiFi.begin(WIFI_SSID, WIFI_PASS);
-    return 0;
+int initialisationWifi(void)
+{
+  status = WiFi.begin(WIFI_SSID, WIFI_PASS);
+  return 0;
 }
 
-int connexionWifi(void) {
+int connexionWifi(void)
+{
   Serial.println("Recherche d'un reseau Wifi...");
   Serial.print("Tentative sur le reseau : ");
   Serial.println(WIFI_SSID);
 
-  while ( status != WL_CONNECTED) {
+  while (status != WL_CONNECTED)
+  {
     status = WiFi.begin(WIFI_SSID, WIFI_PASS);
 
-
     // Défilement des DEL bleues en attendant une connexion sans fil
-    for (int i = 0; i < NEOPIXEL_COUNT; i++) {
-      if (i == pixel) {
+    for (int i = 0; i < NEOPIXEL_COUNT; i++)
+    {
+      if (i == pixel)
+      {
         pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0xFF)); // Pixel bleu
       }
-      else {
+      else
+      {
         pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00)); // Pixel éteint
       }
       pixels.show();
     }
 
     pixel++;
-    if (pixel >= NEOPIXEL_COUNT) {
+    if (pixel >= NEOPIXEL_COUNT)
+    {
       pixel = 0;
     }
 
     delay(100);
-
   }
 
   Serial.print("Connexion Wifi reussie : ");
@@ -139,22 +146,27 @@ int connexionWifi(void) {
   return 0;
 }
 
-void initialisation_succes(void) {
+void initialisation_succes(void)
+{
   // Toutes les DEL en vert après l'initialisation
-  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+  for (int i = 0; i < NEOPIXEL_COUNT; i++)
+  {
     pixels.setPixelColor(i, pixels.Color(0x00, 0xFF, 0x00));
   }
   pixels.show();
   delay(1000);
 }
 
-void initialisation_echec(void) {
+void initialisation_echec(void)
+{
   // Toutes les DEL en rouge après l'initialisation
-  for (int i = 0; i < NEOPIXEL_COUNT; i++) {
+  for (int i = 0; i < NEOPIXEL_COUNT; i++)
+  {
     pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
   }
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < 20; i++)
+  {
     pixels.setPixelColor(i, pixels.Color(0xFF, 0x00, 0x00));
     pixels.show();
     delay(100);
@@ -162,25 +174,27 @@ void initialisation_echec(void) {
     pixels.show();
     delay(100);
   }
-  
 }
 
-void setup() {
+void setup()
+{
   int initilisation_reussie = 0;
   initilisation_reussie += initialisationsNeoPixel();
   initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
-  //initilisation_reussie += initialisationWifi();
-  
+  // initilisation_reussie += initialisationWifi();
+
   // I2C
   Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
   delay(500);
 
-  if (initilisation_reussie == 0) {
+  if (initilisation_reussie == 0)
+  {
     initialisation_succes();
   }
-  else {
+  else
+  {
     initialisation_echec();
   }
 
@@ -188,14 +202,13 @@ void setup() {
   stepperG.setEnableActiveState(LOW);
   stepperG.enable();
 
-  
   stepperD.begin(10);
   stepperD.setEnableActiveState(LOW);
   stepperD.enable();
-
 }
 
-void loop() {
+void loop()
+{
   /*
   int b1 = digitalRead(GPIO_B1);
   int b2 = digitalRead(GPIO_B2);
@@ -203,20 +216,20 @@ void loop() {
   printf("B!: %d B2: %d\r\n", b1, b2);
   */
 
- 
-  /* 
-  Wire.beginTransmission(0x60);
+  int nReceived = 0;
+  /*
+  Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
   Wire.endTransmission();
-  
+
   // Request 31 bytes from CMPS12
-  int nReceived = Wire.requestFrom(0x60 , I2C_CMPS12_REGISTER_LENGTH);
+  int nReceived = Wire.requestFrom(I2C_CMPS12_ADDRESS , I2C_CMPS12_REGISTER_LENGTH);
   uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = { 0 };
 
   nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
 
   // Something has gone wrong
-  if (nReceived != I2C_CMPS12_REGISTER_LENGTH) 
+  if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception\r\n");
   }
@@ -226,12 +239,39 @@ void loop() {
     {
       printf("%02X ", data[i]);
     }
-    printf("\r\n"); 
+    printf("\r\n");
   }
 
   delay(200);
   */
 
+  // Accelerometre
+  uint8_t mxc6655_data[I2C_MXC6655XA_REGISTER_LENGTH] = {0};
+
+  int mxc6655_register = 0x03;
+  printf("Registre %d : ", mxc6655_register);
+  Wire.beginTransmission(I2C_MXC6655XA_ADDRESS);
+  Wire.write(mxc6655_register);
+  Wire.endTransmission();
+
+  nReceived = Wire.readBytes(mxc6655_data, I2C_MXC6655XA_REGISTER_LENGTH);
+  // Something has gone wrong
+  if (nReceived != I2C_MXC6655XA_REGISTER_LENGTH)
+  {
+    printf("Erreur de reception\r\n");
+  }
+  else
+  {
+    for (int i = 0; i < I2C_MXC6655XA_REGISTER_LENGTH; i++)
+    {
+      printf("%02X ", mxc6655_data[i]);
+    }
+    printf("\r\n");
+  }
+
+  delay(200);
+
+  /*
   stepperG.setMicrostep(1);
   stepperD.setMicrostep(1);
 
@@ -241,7 +281,5 @@ void loop() {
   printf("Rotate -360\r\n");
   stepperG.rotate(-360);    // reverse revolution
   stepperD.rotate(-360);    // reverse revolution
-
-
-
+  */
 }
