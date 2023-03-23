@@ -2,6 +2,8 @@
 #include <Adafruit_NeoPixel.h>
 #include <WiFi.h>
 #include <Wire.h>
+#include <SPI.h>
+#include "A4988.h"
 
 #include "board_mapping.h"
 #include "wifi_network.h"
@@ -11,7 +13,8 @@
 // Wifi
 int status = WL_IDLE_STATUS; 
 
-
+// Moteurs
+A4988 stepperG(STEPS_PAR_TOUR, GPIO_DIR_G, GPIO_STEP_G, GPIO_ENABLE_MOTEURS, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G);
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -179,6 +182,11 @@ void setup() {
   else {
     initialisation_echec();
   }
+
+  stepperG.begin(200);
+  stepperG.setEnableActiveState(LOW);
+  stepperG.enable();
+
 }
 
 void loop() {
@@ -188,15 +196,12 @@ void loop() {
 
   printf("B!: %d B2: %d\r\n", b1, b2);
   */
- // Wire.beginTransmission(0x60);
- // Wire.write(0);
- // int nackCatcher = Wire.endTransmission();
-  // Return if we have a connection problem 
- 
 
- Wire.beginTransmission(0x60);
- Wire.write(0);
- Wire.endTransmission();
+ 
+  /* 
+  Wire.beginTransmission(0x60);
+  Wire.write(0);
+  Wire.endTransmission();
   
   // Request 31 bytes from CMPS12
   int nReceived = Wire.requestFrom(0x60 , I2C_CMPS12_REGISTER_LENGTH);
@@ -218,8 +223,20 @@ void loop() {
     printf("\r\n"); 
   }
 
-  
- 
   delay(200);
+  */
+
+
+  
+  stepperG.setMicrostep(1);
+
+  stepperG.enable();
+
+  printf("Rotate 360\r\n");
+  stepperG.rotate(360);     // forward revolution
+  printf("Rotate -360\r\n");
+  stepperG.rotate(-360);    // reverse revolution
+
+
 
 }
