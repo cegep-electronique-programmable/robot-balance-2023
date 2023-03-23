@@ -101,18 +101,6 @@ La carte est conçue avec les composants principaux suivants :
 
 
 
-#### SPI 🟠
-
-SPI 0 et 1 sont utilisés à l'interne du module.
-
-On peut utiliser SPI2 (HSPI) ou SPI3 (VSPI). J'ai choisi HSPI pour concerver le I2C sur les broches 36, 37.
-
-[ESP32 Manuel de Référence Technique - Section 7](https://www.espressif.com/sites/default/files/documentation/esp32_technical_reference_manual_en.pdf#spi)
-
-Les infos sur le shcéma adafruit placent les sorties MOSI à la pin 30 (GPIO 18), MISO à la pin 31 (GPIO 19) et SCK à la pin 29 (GPIO 5)
-
-
-
 #### Guide pour le PCB Layout
 
 PCB à 4 couches :
@@ -137,25 +125,28 @@ Les numéros de broches sont configurés dans le fichier `board_mapping.h`.
 
 Pensez à assigner les bons numéros de broches :
 
-```
+```cpp
 Serial.setPins(GPIO_UART_TX, GPIO_UART_RX);
 Serial.begin(115200);
 ```
 
 Dans le fichier `platformio.ini`, utiliser la configuration suivante pour empêcher un `Reset` à l'ouverture du terminal :
-```
+```ini
 monitor_rts = 0
 monitor_dtr = 0
 ```
 
+[Documentation Espressif Universal Asynchronous Receiver/Transmitter (UART)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/uart.html)
 
 #### I2C
 
 Pensez à assigner les bons numéros de broches :
 
-```
+```cpp
 Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 ```
+
+[Documentation Espressif Inter-Integrated Circuit (I2C)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/i2c.html)
 
 ##### Adresses par défaut
 
@@ -163,6 +154,20 @@ Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 | --- | --- | 
 | CMPS12 | 0x60 |
 | MCX6655 | 0x15 |
+
+
+#### SPI
+
+La carte utilise le bus SPI2 (HSPI).
+Pensez à assigner les bons numéros de broches :
+
+```cpp
+SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
+```
+
+SPI 0 et 1 sont utilisés à l'interne du module.
+
+[Documentation Espressif SPI Master Driver](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/spi_master.html)
 
 # Références : 
 * [ESP32 DevKitC v4-sch](https://dl.espressif.com/dl/schematics/esp32_devkitc_v4-sch.pdf)
