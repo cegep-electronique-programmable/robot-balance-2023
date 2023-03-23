@@ -248,26 +248,20 @@ void loop()
   // Accelerometre
   uint8_t mxc6655_data[I2C_MXC6655XA_REGISTER_LENGTH] = {0};
 
-  int mxc6655_register = 0x03;
+  int mxc6655_register = 0x09;
   printf("Registre %d : ", mxc6655_register);
   Wire.beginTransmission(I2C_MXC6655XA_ADDRESS);
   Wire.write(mxc6655_register);
-  Wire.endTransmission();
-
-  nReceived = Wire.readBytes(mxc6655_data, I2C_MXC6655XA_REGISTER_LENGTH);
-  // Something has gone wrong
-  if (nReceived != I2C_MXC6655XA_REGISTER_LENGTH)
+  int error = Wire.endTransmission(); // Grab error from first write
+  if (error == 0)
   {
-    printf("Erreur de reception\r\n");
+    Wire.requestFrom(I2C_MXC6655XA_ADDRESS, 1);
+    int8_t val = Wire.read();
+    float temp = (float(val)*0.586) + 25.0;
+    printf("%f\r\n", temp);
   }
   else
-  {
-    for (int i = 0; i < I2C_MXC6655XA_REGISTER_LENGTH; i++)
-    {
-      printf("%02X ", mxc6655_data[i]);
-    }
-    printf("\r\n");
-  }
+    printf("Erreur\r\n");
 
   delay(200);
 
