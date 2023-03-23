@@ -15,6 +15,7 @@ int status = WL_IDLE_STATUS;
 
 // Moteurs
 A4988 stepperG(STEPS_PAR_TOUR, GPIO_DIR_G, GPIO_STEP_G, GPIO_ENABLE_MOTEURS, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G);
+A4988 stepperD(STEPS_PAR_TOUR, GPIO_DIR_D, GPIO_STEP_D, GPIO_ENABLE_MOTEURS, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D);
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -183,9 +184,14 @@ void setup() {
     initialisation_echec();
   }
 
-  stepperG.begin(200);
+  stepperG.begin(10);
   stepperG.setEnableActiveState(LOW);
   stepperG.enable();
+
+  
+  stepperD.begin(10);
+  stepperD.setEnableActiveState(LOW);
+  stepperD.enable();
 
 }
 
@@ -226,16 +232,15 @@ void loop() {
   delay(200);
   */
 
-
-  
   stepperG.setMicrostep(1);
-
-  stepperG.enable();
+  stepperD.setMicrostep(1);
 
   printf("Rotate 360\r\n");
   stepperG.rotate(360);     // forward revolution
+  stepperD.rotate(360);     // forward revolution
   printf("Rotate -360\r\n");
   stepperG.rotate(-360);    // reverse revolution
+  stepperD.rotate(-360);    // reverse revolution
 
 
 
