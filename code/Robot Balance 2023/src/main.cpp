@@ -2,6 +2,13 @@
 #include "board_mapping.h"
 #include "interfaces.h"
 
+#include <Wire.h>
+#include <SPI.h>
+#include "A4988.h"
+#include "MXC6655.h"
+#include <Adafruit_NeoPixel.h>
+
+
 #define WIFI_ACTIVE ENTERPRISE
 
 #include "secrets.h"
