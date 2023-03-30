@@ -21,9 +21,9 @@ Les roues sont entrainées par des moteurs pas-à-pas de type NEMA-17.
 La carte électronique est développée dans Fusion 360 et elle est basée sur :
 * Un microcontrôleur ESP32-WROOM-32.
 * Deux commandes moteur Polulu A4988.
-* Un capteur ADXL.
+* Un capteur MXC6655.
 * Un capteur CMPS12.
-* Des régulateurs d'alimentation AP63203 et AP2112K.
+* Des régulateurs d'alimentation AP63205 et AP2112K.
 
 ### Firmware
 
