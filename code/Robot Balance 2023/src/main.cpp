@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "board_mapping.h"
+#include "interfaces.h"
 
 #define WIFI_ACTIVE ENTERPRISE
 
