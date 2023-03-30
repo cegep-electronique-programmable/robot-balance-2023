@@ -2,19 +2,19 @@
 
 #define WIFI_ACTIVE ENTERPRISE
 
+#include "secrets.h"
+
 #ifdef WIFI_ACTIVE
 #include <WiFi.h>
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 #if WIFI_ACTIVE != ENTERPRISE
-const char *host = "esp32";
-const char *ssid = "TBD";
-const char *password = "TBD";
+const char *host = WIFI_HOST_NAME;
+const char *ssid = WIFI_SSID;
+const char *password = WIFI_PASSWORD;
 #else
-#include "esp_wpa2.h"           //wpa2 library for connections to Enterprise networks
-#define EAP_IDENTITY "tbd@cmaisonneuve.qc.ca"    // if connecting from another corporation, use identity@organisation.domain in Eduroam
-#define EAP_PASSWORD "tbd" // your Eduroam password
-const char *ssid = "eduroam";         // Eduroam SSID
+#include "esp_wpa2.h"
+const char *ssid = EAP_SSID; 
 int counter = 0;
 #endif
 #endif
