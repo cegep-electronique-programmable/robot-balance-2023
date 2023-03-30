@@ -3,15 +3,22 @@
 #include <WiFiUdp.h>
 #include <ArduinoOTA.h>
 
+//#define WIFI_ACTIVE
+
+
+#ifdef WIFI_ACTIVE
 const char* host = "esp32";
 const char* ssid = "wifi-jm";
 const char* password = "&y85&#mLSyCT2zioTxiK@EkNnpKf3XM%";
+#endif
 
 int timeout = 0;
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
+
+  #ifdef WIFI_ACTIVE
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   while (WiFi.waitForConnectResult() != WL_CONNECTED) {
@@ -64,11 +71,15 @@ void setup() {
   Serial.println("Ready");
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+  #endif
 
 }
 
 void loop() {
+  #ifdef WIFI_ACTIVE
   ArduinoOTA.handle();
+  #endif
+  
   timeout++;
 
   if (timeout%1000 == 0) {
