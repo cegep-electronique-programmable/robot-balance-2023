@@ -8,22 +8,24 @@
 #include "MXC6655.h"
 #include <Adafruit_NeoPixel.h>
 
+#include <StepperNB.h>
+
+StepperNB moteur_gauche(GPIO_DIR_G, GPIO_STEP_G, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G, 200, false);
+StepperNB moteur_droit(GPIO_DIR_D, GPIO_STEP_D, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D, 200, true);
 
 float target_speed_degrees_per_second_moteur_1 = 90;
 int ratio_moteur_1 = 4;
 int step_per_tour_moteur_1 = 200;
 int delai_timer_moteur_1 = 1000000;
 
-
 float target_speed_degrees_per_second_moteur_2 = 45;
 int ratio_moteur_2 = 4;
 int step_per_tour_moteur_2 = 200;
 int delai_timer_moteur_2 = 1000000;
 
-
 #define KP 20
 
-//#define WIFI_ACTIVE ENTERPRISE
+// #define WIFI_ACTIVE ENTERPRISE
 
 #include "secrets.h"
 
@@ -45,53 +47,30 @@ int counter = 0;
 hw_timer_t *Timer0_Cfg = NULL;
 hw_timer_t *Timer3_Cfg = NULL;
 
-
-
 int angle = 0;
 int angle_sp = 8;
 int erreur = 0;
 int output = 0;
 
-
-void IRAM_ATTR Timer0_ISR() {
-
-  if (target_speed_degrees_per_second_moteur_1 > 0) {
-    digitalWrite(GPIO_DIR_G, LOW);
-  } else {
-    digitalWrite(GPIO_DIR_G, HIGH);
-  }
-
+void IRAM_ATTR Timer0_MoteurG_ISR()
+{
   digitalWrite(GPIO_STEP_G, HIGH);
   delayMicroseconds(2);
   digitalWrite(GPIO_STEP_G, LOW);
 
-  float step_per_second = abs(target_speed_degrees_per_second_moteur_1) / 360.0 * step_per_tour_moteur_1 * ratio_moteur_1;
-  delai_timer_moteur_1 = 1000000 / step_per_second;
-
-  timerAlarmWrite(Timer0_Cfg, delai_timer_moteur_1, true);
+  timerAlarmWrite(Timer0_Cfg, moteur_gauche.getTimerPeriod(), true);
   timerAlarmEnable(Timer0_Cfg);
 }
 
-void IRAM_ATTR Timer3_ISR() {
-
-  if (target_speed_degrees_per_second_moteur_2 > 0) {
-    digitalWrite(GPIO_DIR_D, HIGH);
-  } else {
-    digitalWrite(GPIO_DIR_D, LOW);
-  }
-
+void IRAM_ATTR Timer3_MoteurD_ISR()
+{
   digitalWrite(GPIO_STEP_D, HIGH);
   delayMicroseconds(2);
   digitalWrite(GPIO_STEP_D, LOW);
 
-  float step_per_second = abs(target_speed_degrees_per_second_moteur_2) / 360.0 * step_per_tour_moteur_2 * ratio_moteur_2;
-  delai_timer_moteur_2 = 1000000 / step_per_second;
-
-  timerAlarmWrite(Timer3_Cfg, delai_timer_moteur_2, true);
+  timerAlarmWrite(Timer3_Cfg, moteur_droit.getTimerPeriod(), true);
   timerAlarmEnable(Timer3_Cfg);
 }
-
-
 
 // Accéléromètre
 MXC6655 accel;
@@ -101,9 +80,6 @@ Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
 int pixel = 0;
 
 int timeoutVAR = 0;
-
-
-
 
 // Fonction d'initialisation des GPIO
 int initialisationGPIO(void)
@@ -182,9 +158,6 @@ int initialisationsNeoPixel(void)
   pixels.show();
   return 0;
 }
-
-
-
 
 void setup()
 {
@@ -276,45 +249,31 @@ void setup()
 
 #endif
 
-  
-  
-  digitalWrite(GPIO_MS1_G, LOW);
-  digitalWrite(GPIO_MS2_G, HIGH);
-  digitalWrite(GPIO_MS3_G, LOW);
+  moteur_gauche.setSpeed(90);
+  moteur_droit.setSpeed(180);
 
-  digitalWrite(GPIO_MS1_D, LOW);
-  digitalWrite(GPIO_MS2_D, HIGH);
-  digitalWrite(GPIO_MS3_D, LOW);
-
+  moteur_gauche.setRatio(8);
+  moteur_droit.setRatio(16);
+  
   Timer0_Cfg = timerBegin(0, 80, true); // timer incrémente toutes les 1us
-  
-  timerAttachInterrupt(Timer0_Cfg, &Timer0_ISR, true);
-  timerAlarmWrite(Timer0_Cfg, delai_timer_moteur_1, true);
+  timerAttachInterrupt(Timer0_Cfg, &Timer0_MoteurG_ISR, true);
+  timerAlarmWrite(Timer0_Cfg, 1000000, true); // delai d'une seconde au démarrage
   timerAlarmEnable(Timer0_Cfg);
 
-
   Timer3_Cfg = timerBegin(3, 80, true); // timer incrémente toutes les 1us
-  
-  timerAttachInterrupt(Timer3_Cfg, &Timer3_ISR, true);
-  timerAlarmWrite(Timer3_Cfg, delai_timer_moteur_2, true);
+  timerAttachInterrupt(Timer3_Cfg, &Timer3_MoteurD_ISR, true);
+  timerAlarmWrite(Timer3_Cfg, 1000000, true); // delai d'une seconde au démarrage
   timerAlarmEnable(Timer3_Cfg);
 
+  pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
+  digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 }
-
 
 void loop()
 {
-  pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
-  digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
-  printf("Moteurs On\r\n");
+  
+  printf("Timer 0 %20.6f\r\n", timerReadSeconds(Timer0_Cfg));
+  printf("Timer 3 %20.6f\r\n", timerReadSeconds(Timer3_Cfg));
 
-
-  delay(1000);
-
-
-
- 
+  delay(200);
 }
-
-
-
