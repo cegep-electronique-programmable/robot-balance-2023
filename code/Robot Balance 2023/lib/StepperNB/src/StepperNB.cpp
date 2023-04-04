@@ -20,7 +20,7 @@ StepperNB::StepperNB(int pin_direction, int pin_step, int pin_ms1, int pin_ms2, 
     this->target_speed_degrees_per_second = 0;
 }
 
-void StepperNB::setSpeed(int target_speed_degrees_per_second)
+void StepperNB::setSpeed(float target_speed_degrees_per_second)
 {
     this->target_speed_degrees_per_second = target_speed_degrees_per_second;
     if (this->target_speed_degrees_per_second > 0)
@@ -95,7 +95,10 @@ int StepperNB::getRatio(void)
 int StepperNB::getTimerPeriod(void)
 {
     float step_per_second = abs(this->target_speed_degrees_per_second) / 360.0 * this->number_of_steps * this->ratio;
-    this->timer_period = 1000000 / step_per_second;
+    int timer_period = 1000000.0 / step_per_second; // Nombre de micro secondes entre deux impulsions
+    this->timer_period = timer_period;
+
+
     return this->timer_period;
 }
 

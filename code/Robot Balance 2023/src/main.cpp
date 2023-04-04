@@ -54,21 +54,36 @@ int output = 0;
 
 void IRAM_ATTR Timer0_MoteurG_ISR()
 {
-  digitalWrite(GPIO_STEP_G, HIGH);
-  delayMicroseconds(2);
-  digitalWrite(GPIO_STEP_G, LOW);
+  int delay = moteur_gauche.getTimerPeriod();
+  if (delay > 100000) {
+    delay = 100000;
+  }
+  delay = delay > 100000 ? 100000 : delay;
+  if (delay < 100000)
+  {
+    digitalWrite(GPIO_STEP_G, HIGH);
+    delayMicroseconds(2);
+    digitalWrite(GPIO_STEP_G, LOW);
+  }
 
-  timerAlarmWrite(Timer0_Cfg, moteur_gauche.getTimerPeriod(), true);
+  timerAlarmWrite(Timer0_Cfg, delay, true);
   timerAlarmEnable(Timer0_Cfg);
 }
 
 void IRAM_ATTR Timer3_MoteurD_ISR()
 {
-  digitalWrite(GPIO_STEP_D, HIGH);
-  delayMicroseconds(2);
-  digitalWrite(GPIO_STEP_D, LOW);
+  int delay = moteur_droit.getTimerPeriod();
+  if (delay > 100000) {
+    delay = 100000;
+  }
+  if (delay < 100000)
+  {
+    digitalWrite(GPIO_STEP_D, HIGH);
+    delayMicroseconds(2);
+    digitalWrite(GPIO_STEP_D, LOW);
+  }
 
-  timerAlarmWrite(Timer3_Cfg, moteur_droit.getTimerPeriod(), true);
+  timerAlarmWrite(Timer3_Cfg, delay, true);
   timerAlarmEnable(Timer3_Cfg);
 }
 
@@ -249,12 +264,15 @@ void setup()
 
 #endif
 
-  moteur_gauche.setSpeed(90);
-  moteur_droit.setSpeed(180);
+  // I2C
+  Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
-  moteur_gauche.setRatio(8);
-  moteur_droit.setRatio(16);
-  
+  moteur_gauche.setSpeed(0);
+  moteur_droit.setSpeed(0);
+
+  moteur_gauche.setRatio(1);
+  moteur_droit.setRatio(1);
+
   Timer0_Cfg = timerBegin(0, 80, true); // timer incrémente toutes les 1us
   timerAttachInterrupt(Timer0_Cfg, &Timer0_MoteurG_ISR, true);
   timerAlarmWrite(Timer0_Cfg, 1000000, true); // delai d'une seconde au démarrage
@@ -267,13 +285,60 @@ void setup()
 
   pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
+
+  //SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
 
 void loop()
 {
-  
-  printf("Timer 0 %20.6f\r\n", timerReadSeconds(Timer0_Cfg));
-  printf("Timer 3 %20.6f\r\n", timerReadSeconds(Timer3_Cfg));
 
-  delay(200);
+  int nReceived = 0;
+  int angle_0_255 = 0;
+  int angle_set_point = 5;
+  int angle = 0;
+  float vitesse = 0;
+
+  int angle_erreur = 0;
+
+  Wire.beginTransmission(I2C_CMPS12_ADDRESS);
+  Wire.write(0);
+  Wire.endTransmission();
+  // Request 31 bytes from CMPS12
+  nReceived = Wire.requestFrom(I2C_CMPS12_ADDRESS, I2C_CMPS12_REGISTER_LENGTH);
+  uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = {0};
+
+  nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
+  // Something has gone wrong
+  if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
+  {
+    printf("Erreur de reception\r\n");
+  }
+  else
+  {
+    angle_0_255 = data[4];
+    if (angle_0_255 > 127)
+    {
+      angle = angle_0_255 - 256;
+    }
+    else
+    {
+      angle = angle_0_255;
+    }
+
+    angle_erreur = angle_set_point - angle;
+
+    vitesse = 10 * angle_erreur;
+
+    moteur_gauche.setSpeed(100);
+    moteur_droit.setSpeed(100);
+
+    printf("Timer Periods 0: %10d, 3: %10d\r\n", moteur_gauche.getTimerPeriod(), moteur_droit.getTimerPeriod());
+    //printf("SP: %3d, Angle: %3d, E: %3d, V: %5.2f deg/s", angle_set_point, angle, angle_erreur, vitesse);
+    //printf("\r\n");
+  }
+
+  //printf("Timer 0 %20.6f\r\n", timerReadSeconds(Timer0_Cfg));
+  //printf("Timer 3 %20.6f\r\n", timerReadSeconds(Timer3_Cfg));
+
+  //delay(200);
 }
