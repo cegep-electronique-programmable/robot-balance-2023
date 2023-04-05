@@ -13,7 +13,7 @@ public:
     void setRatio(int ratio);
 
     int getRatio(void);
-    int getTimerPeriod(void);
+    uint64_t getTimerPeriod(void);
 
     int version(void);
 

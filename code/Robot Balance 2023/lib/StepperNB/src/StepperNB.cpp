@@ -92,13 +92,17 @@ int StepperNB::getRatio(void)
     return this->ratio;
 }
 
-int StepperNB::getTimerPeriod(void)
+uint64_t StepperNB::getTimerPeriod(void)
 {
     float step_per_second = abs(this->target_speed_degrees_per_second) / 360.0 * this->number_of_steps * this->ratio;
     int timer_period = 1000000.0 / step_per_second; // Nombre de micro secondes entre deux impulsions
+    
+    if (timer_period < 100) // saturation at 100 us
+    {
+        timer_period = 100;
+    }
+    
     this->timer_period = timer_period;
-
-
     return this->timer_period;
 }
 
