@@ -20,9 +20,11 @@ StepperNB::StepperNB(int pin_direction, int pin_step, int pin_ms1, int pin_ms2, 
     this->target_speed_degrees_per_second = 0;
 }
 
-void StepperNB::setSpeed(int target_speed_degrees_per_second)
+void StepperNB::setSpeed(float target_speed_degrees_per_second)
 {
     this->target_speed_degrees_per_second = target_speed_degrees_per_second;
+
+    // Adujst direction
     if (this->target_speed_degrees_per_second > 0)
     {
         this->setDirection(0);
@@ -31,6 +33,20 @@ void StepperNB::setSpeed(int target_speed_degrees_per_second)
     {
         this->setDirection(1);
     }
+
+    // TODO: adjust ratio according to speed range
+
+    // Compute timer period
+    float step_per_second = abs(this->target_speed_degrees_per_second) / 360.0 * this->number_of_steps * this->ratio;
+    int timer_period = 1000000.0 / step_per_second; // Nombre de micro secondes entre deux impulsions
+    if (timer_period < 100) // saturation at 100 us
+    {
+        timer_period = 100;
+    }
+
+    
+    
+    this->timer_period = timer_period;
 }
 
 void StepperNB::setDirection(int direction)
@@ -92,10 +108,9 @@ int StepperNB::getRatio(void)
     return this->ratio;
 }
 
-int StepperNB::getTimerPeriod(void)
+uint64_t StepperNB::getTimerPeriod(void)
 {
-    float step_per_second = abs(this->target_speed_degrees_per_second) / 360.0 * this->number_of_steps * this->ratio;
-    this->timer_period = 1000000 / step_per_second;
+    
     return this->timer_period;
 }
 
