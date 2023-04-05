@@ -51,9 +51,14 @@ int angle_sp = 8;
 int erreur = 0;
 int output = 0;
 
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+
 void IRAM_ATTR Timer0_MoteurG_ISR()
 {
-  int delay = moteur_gauche.getTimerPeriod();
+  portENTER_CRITICAL(&timerMux);
+  noInterrupts();
+  
+  uint64_t delay = moteur_gauche.getTimerPeriod();
   if (delay > 100000) {
     delay = 100000;
   }
@@ -67,11 +72,20 @@ void IRAM_ATTR Timer0_MoteurG_ISR()
 
   timerAlarmWrite(Timer0_Cfg, delay, true);
   timerAlarmEnable(Timer0_Cfg);
+
+  interrupts();
+  portEXIT_CRITICAL(&timerMux);
 }
+
+
+
 
 void IRAM_ATTR Timer3_MoteurD_ISR()
 {
-  int delay = moteur_droit.getTimerPeriod();
+  portENTER_CRITICAL(&timerMux);
+  noInterrupts();
+
+  uint64_t delay = moteur_droit.getTimerPeriod();
   if (delay > 100000) {
     delay = 100000;
   }
@@ -84,6 +98,10 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
   timerAlarmWrite(Timer3_Cfg, delay, true);
   timerAlarmEnable(Timer3_Cfg);
+
+  interrupts();
+  portEXIT_CRITICAL(&timerMux);
+
 }
 
 // Accéléromètre
@@ -288,6 +306,8 @@ void setup()
   //SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
 
+int valeur = 0;
+
 void loop()
 {
 
@@ -298,7 +318,7 @@ void loop()
   float vitesse = 0;
 
   int angle_erreur = 0;
-
+/*xù
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
   Wire.endTransmission();
@@ -312,7 +332,7 @@ void loop()
   {
     printf("Erreur de reception\r\n");
   }
-  else*/
+  else
   {
     angle_0_255 = data[4];
     if (angle_0_255 > 127)
@@ -327,13 +347,12 @@ void loop()
     angle_erreur = angle_set_point - angle;
 
     vitesse = 10 * angle_erreur;
-
-    moteur_gauche.setSpeed(100);
+*/{
+    moteur_gauche.setSpeed(valeur);
     moteur_droit.setSpeed(100);
 
-    printf("Timer Periods 0: %10d, 3: %10d\r\n", moteur_gauche.getTimerPeriod(), moteur_droit.getTimerPeriod());
-    //printf("SP: %3d, Angle: %3d, E: %3d, V: %5.2f deg/s", angle_set_point, angle, angle_erreur, vitesse);
-    //printf("\r\n");
+    printf("Message pour tester le printf avec un valeur de %d et la valeur du timer 0 : %d\r\n", valeur, moteur_gauche.getTimerPeriod());
+    valeur++;
   }
 
   //printf("Timer 0 %20.6f\r\n", timerReadSeconds(Timer0_Cfg));
