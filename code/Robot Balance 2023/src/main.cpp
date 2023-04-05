@@ -4,7 +4,7 @@
 
 #include <Wire.h>
 #include <SPI.h>
-//#include "MXC6655.h"
+// #include "MXC6655.h"
 #include <Adafruit_NeoPixel.h>
 
 #include <StepperNB.h>
@@ -57,9 +57,10 @@ void IRAM_ATTR Timer0_MoteurG_ISR()
 {
   portENTER_CRITICAL(&timerMux);
   noInterrupts();
-  
+
   uint64_t delay = moteur_gauche.getTimerPeriod();
-  if (delay > 100000) {
+  if (delay > 100000)
+  {
     delay = 100000;
   }
   delay = delay > 100000 ? 100000 : delay;
@@ -77,16 +78,14 @@ void IRAM_ATTR Timer0_MoteurG_ISR()
   portEXIT_CRITICAL(&timerMux);
 }
 
-
-
-
 void IRAM_ATTR Timer3_MoteurD_ISR()
 {
   portENTER_CRITICAL(&timerMux);
   noInterrupts();
 
   uint64_t delay = moteur_droit.getTimerPeriod();
-  if (delay > 100000) {
+  if (delay > 100000)
+  {
     delay = 100000;
   }
   if (delay < 100000)
@@ -101,11 +100,10 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
   interrupts();
   portEXIT_CRITICAL(&timerMux);
-
 }
 
 // Accéléromètre
-//MXC6655 accel;
+// MXC6655 accel;
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -303,10 +301,8 @@ void setup()
   pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 
-  //SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
+  // SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
-
-int valeur = 0;
 
 void loop()
 {
@@ -318,7 +314,7 @@ void loop()
   float vitesse = 0;
 
   int angle_erreur = 0;
-/*xù
+
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
   Wire.endTransmission();
@@ -328,35 +324,31 @@ void loop()
 
   nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
   // Something has gone wrong
-  /*if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
+  if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception\r\n");
+    angle_0_255 = 1;
   }
   else
   {
     angle_0_255 = data[4];
-    if (angle_0_255 > 127)
-    {
-      angle = angle_0_255 - 256;
-    }
-    else
-    {
-      angle = angle_0_255;
-    }
-
-    angle_erreur = angle_set_point - angle;
-
-    vitesse = 10 * angle_erreur;
-*/{
-    moteur_gauche.setSpeed(valeur);
-    moteur_droit.setSpeed(100);
-
-    printf("Message pour tester le printf avec un valeur de %d et la valeur du timer 0 : %d\r\n", valeur, moteur_gauche.getTimerPeriod());
-    valeur++;
   }
 
-  //printf("Timer 0 %20.6f\r\n", timerReadSeconds(Timer0_Cfg));
-  //printf("Timer 3 %20.6f\r\n", timerReadSeconds(Timer3_Cfg));
+  if (angle_0_255 > 127)
+  {
+    angle = angle_0_255 - 256;
+  }
+  else
+  {
+    angle = angle_0_255;
+  }
 
-  //delay(200);
+  angle_erreur = angle_set_point - angle;
+
+  vitesse = 10 * angle_erreur;
+
+  moteur_gauche.setSpeed(vitesse);
+  moteur_droit.setSpeed(vitesse);
+
+  printf("SP: %4d, Angle: %4d, Erreur: %5d, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
 }
