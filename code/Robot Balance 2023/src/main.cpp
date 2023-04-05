@@ -4,8 +4,7 @@
 
 #include <Wire.h>
 #include <SPI.h>
-#include "A4988.h"
-#include "MXC6655.h"
+//#include "MXC6655.h"
 #include <Adafruit_NeoPixel.h>
 
 #include <StepperNB.h>
@@ -88,7 +87,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 }
 
 // Accéléromètre
-MXC6655 accel;
+//MXC6655 accel;
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -309,11 +308,11 @@ void loop()
 
   nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
   // Something has gone wrong
-  if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
+  /*if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception\r\n");
   }
-  else
+  else*/
   {
     angle_0_255 = data[4];
     if (angle_0_255 > 127)
