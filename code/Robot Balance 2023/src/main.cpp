@@ -405,10 +405,10 @@ void loop()
 
     absolute_position_set_point = 0;
     absolute_position_error = absolute_position_set_point - absolute_position;
-    angle_set_point = KP_SPEED * absolute_position_error;
+    angle_set_point = KP_SPEED * absolute_position_error + 5;
 
-    angle_set_point = angle_set_point > 5 ? 5 : angle_set_point;
-    angle_set_point = angle_set_point < -5 ? -5 : angle_set_point;
+    angle_set_point = angle_set_point > 10 ? 10 : angle_set_point;
+    angle_set_point = angle_set_point < 0 ? 0 : angle_set_point;
 
     printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
   }
