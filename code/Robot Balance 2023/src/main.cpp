@@ -7,7 +7,24 @@
 #include "MXC6655.h"
 #include <Adafruit_NeoPixel.h>
 
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <WebSerial.h>
+
+
 #include <StepperNB.h>
+
+AsyncWebServer server(80);
+
+void recvMsg(uint8_t *data, size_t len){
+  WebSerial.println("Received Data...");
+  String d = "";
+  for(int i=0; i < len; i++){
+    d += char(data[i]);
+  }
+  WebSerial.println(d);
+}
+
 
 StepperNB moteur_gauche(GPIO_DIR_G, GPIO_STEP_G, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G, 200, false);
 StepperNB moteur_droit(GPIO_DIR_D, GPIO_STEP_D, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D, 200, true);
@@ -311,6 +328,10 @@ void setup()
 
 #endif
 
+  WebSerial.begin(&server);
+  WebSerial.msgCallback(recvMsg);
+  server.begin();
+
   // I2C
   Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
@@ -410,7 +431,11 @@ void loop()
     angle_set_point = angle_set_point > 10 ? 10 : angle_set_point;
     angle_set_point = angle_set_point < 0 ? 0 : angle_set_point;
 
-    printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
+    //printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
+    WebSerial.print("Angle: ");
+    WebSerial.println(angle_average);
+    
+
   }
 
   // Boucle de controle de l'inclinaison
@@ -434,4 +459,6 @@ void loop()
 
   //
   // printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
+
+  
 }
