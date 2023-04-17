@@ -22,9 +22,10 @@ int ratio_moteur_2 = 4;
 int step_per_tour_moteur_2 = 200;
 int delai_timer_moteur_2 = 1000000;
 
-#define KP 20
+#define KP 50
+#define KI 100
 
-// #define WIFI_ACTIVE ENTERPRISE
+#define WIFI_ACTIVE ENTERPRISE
 
 #include "secrets.h"
 
@@ -285,8 +286,8 @@ void setup()
   moteur_gauche.setSpeed(0);
   moteur_droit.setSpeed(0);
 
-  moteur_gauche.setRatio(1);
-  moteur_droit.setRatio(1);
+  moteur_gauche.setRatio(16);
+  moteur_droit.setRatio(16);
 
   Timer0_Cfg = timerBegin(0, 80, true); // timer incrémente toutes les 1us
   timerAttachInterrupt(Timer0_Cfg, &Timer0_MoteurG_ISR, true);
@@ -304,16 +305,23 @@ void setup()
   // SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
 
+int angle_index = 0;
+int angle_samples[10];
+float angle_average = 0;
+
 void loop()
 {
 
   int nReceived = 0;
   int angle_0_255 = 0;
-  int angle_set_point = 5;
+  float angle_set_point = 5;
   int angle = 0;
   float vitesse = 0;
 
-  int angle_erreur = 0;
+  float angle_erreur = 0;
+  float angle_erreur_somme = 0;
+
+  float dt = 0.01;
 
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
@@ -343,12 +351,28 @@ void loop()
     angle = angle_0_255;
   }
 
-  angle_erreur = angle_set_point - angle;
+  // Moving average on angle over 10 samples
+  angle_samples[angle_index] = angle;
+  angle_index = angle_index + 1;
+  if (angle_index >= 10)
+  {
+    angle_index = 0;
+  }
 
-  vitesse = 10 * angle_erreur;
+  angle_average = 0;
+  for (int i = 0; i < 10; i++)
+  {
+    angle_average = (float)angle_average + (float)angle_samples[i];
+  }
+  angle_average = (float)angle_average*0.1;
+
+  angle_erreur = angle_set_point - angle_average;
+  angle_erreur_somme = angle_erreur_somme + angle_erreur * dt;
+
+  vitesse = KP * angle_erreur + KI * (angle_erreur_somme);
 
   moteur_gauche.setSpeed(vitesse);
   moteur_droit.setSpeed(vitesse);
 
-  printf("SP: %4d, Angle: %4d, Erreur: %5d, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
+  printf("SP: %5.2f, Angle: %4d, Angle Moyen: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle, angle_average, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
 }
