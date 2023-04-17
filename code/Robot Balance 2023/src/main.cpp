@@ -4,7 +4,7 @@
 
 #include <Wire.h>
 #include <SPI.h>
-// #include "MXC6655.h"
+#include "MXC6655.h"
 #include <Adafruit_NeoPixel.h>
 
 #include <StepperNB.h>
@@ -22,7 +22,7 @@ int ratio_moteur_2 = 4;
 int step_per_tour_moteur_2 = 200;
 int delai_timer_moteur_2 = 1000000;
 
-#define KP 50
+#define KP 75
 #define KI 100
 
 #define WIFI_ACTIVE ENTERPRISE
@@ -104,7 +104,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 }
 
 // Accéléromètre
-// MXC6655 accel;
+MXC6655 accel;
 
 // Instanciation des dels
 Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
@@ -302,7 +302,7 @@ void setup()
   pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 
-  // SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
+  SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
 
 int angle_index = 0;
@@ -311,6 +311,7 @@ float angle_average = 0;
 
 void loop()
 {
+  ArduinoOTA.handle();
 
   int nReceived = 0;
   int angle_0_255 = 0;
@@ -351,13 +352,24 @@ void loop()
     angle = angle_0_255;
   }
 
+  accel.begin();
+  float accX = accel.getAccel(0, 0);
+  float accY = accel.getAccel(1, 0);
+  float accZ = accel.getAccel(2, 0);
+  float temp = accel.getTemp();
+  float theta = atan2(accX, accZ) * 180 / PI;
+
+
   // Moving average on angle over 10 samples
-  angle_samples[angle_index] = angle;
+  #define RATIO 0.95
+  angle_samples[angle_index] = (0.8 * (float) angle) + (float)(1-RATIO) * theta;
   angle_index = angle_index + 1;
   if (angle_index >= 10)
   {
     angle_index = 0;
   }
+
+  
 
   angle_average = 0;
   for (int i = 0; i < 10; i++)
@@ -373,6 +385,9 @@ void loop()
 
   moteur_gauche.setSpeed(vitesse);
   moteur_droit.setSpeed(vitesse);
+  
+  //digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 
-  printf("SP: %5.2f, Angle: %4d, Angle Moyen: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle, angle_average, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
+  //printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle_average, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
+  //printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
 }
