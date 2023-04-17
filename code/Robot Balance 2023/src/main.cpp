@@ -22,8 +22,31 @@ int ratio_moteur_2 = 4;
 int step_per_tour_moteur_2 = 200;
 int delai_timer_moteur_2 = 1000000;
 
+
+int angle_index = 0;
+int angle_samples[10];
+float angle_average = 0;
+
+unsigned long previousMillisControlLoop1;
+unsigned long previousMillisControlLoop2;
+
+float angle_set_point = 5;
+int angle = 0;
+float vitesse = 0;
+
+float absolute_position_set_point = 0;
+int32_t absolute_position = 0;
+float absolute_position_error = 0;
+
+float angle_erreur = 0;
+float angle_erreur_somme = 0;
+
+#define KP_SPEED 0.001
+#define DIAMETRE_ROUE 0.91
+
 #define KP 75
 #define KI 100
+float dt = 0.02;
 
 #define WIFI_ACTIVE ENTERPRISE
 
@@ -44,13 +67,13 @@ int counter = 0;
 #endif
 #endif
 
-hw_timer_t *Timer0_Cfg = NULL;
-hw_timer_t *Timer3_Cfg = NULL;
+hw_timer_t *Timer0_Cfg = NULL; // Moteur Gauche
+hw_timer_t *Timer3_Cfg = NULL; // Moteur Droit
 
-int angle = 0;
 int angle_sp = 8;
 int erreur = 0;
 int output = 0;
+
 
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
@@ -70,6 +93,13 @@ void IRAM_ATTR Timer0_MoteurG_ISR()
     digitalWrite(GPIO_STEP_G, HIGH);
     delayMicroseconds(2);
     digitalWrite(GPIO_STEP_G, LOW);
+    if (moteur_gauche.getDirection() == 0)
+    {
+      absolute_position = absolute_position + 16/moteur_gauche.getRatio();
+    }
+    else {
+      absolute_position = absolute_position - 16/moteur_gauche.getRatio();
+    }
   }
 
   timerAlarmWrite(Timer0_Cfg, delay, true);
@@ -102,6 +132,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
   interrupts();
   portEXIT_CRITICAL(&timerMux);
 }
+
 
 // Accéléromètre
 MXC6655 accel;
@@ -305,9 +336,6 @@ void setup()
   SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
 }
 
-int angle_index = 0;
-int angle_samples[10];
-float angle_average = 0;
 
 void loop()
 {
@@ -315,14 +343,6 @@ void loop()
 
   int nReceived = 0;
   int angle_0_255 = 0;
-  float angle_set_point = 5;
-  int angle = 0;
-  float vitesse = 0;
-
-  float angle_erreur = 0;
-  float angle_erreur_somme = 0;
-
-  float dt = 0.01;
 
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
@@ -359,35 +379,59 @@ void loop()
   float temp = accel.getTemp();
   float theta = atan2(accX, accZ) * 180 / PI;
 
-
-  // Moving average on angle over 10 samples
-  #define RATIO 0.95
-  angle_samples[angle_index] = (0.8 * (float) angle) + (float)(1-RATIO) * theta;
+// Moving average on angle over 10 samples
+#define RATIO 0.95
+  angle_samples[angle_index] = (0.8 * (float)angle) + (float)(1 - RATIO) * theta;
   angle_index = angle_index + 1;
   if (angle_index >= 10)
   {
     angle_index = 0;
   }
 
-  
-
   angle_average = 0;
   for (int i = 0; i < 10; i++)
   {
     angle_average = (float)angle_average + (float)angle_samples[i];
   }
-  angle_average = (float)angle_average*0.1;
+  angle_average = (float)angle_average * 0.1;
 
-  angle_erreur = angle_set_point - angle_average;
-  angle_erreur_somme = angle_erreur_somme + angle_erreur * dt;
 
-  vitesse = KP * angle_erreur + KI * (angle_erreur_somme);
+  // Boucle de controle de la vitesse horizontale
+  unsigned long currentMillis = millis();
+
+  if (currentMillis - previousMillisControlLoop2 >= 200)
+  {
+    previousMillisControlLoop2 = currentMillis;
+
+    absolute_position_set_point = 0;
+    absolute_position_error = absolute_position_set_point - absolute_position;
+    angle_set_point = KP_SPEED * absolute_position_error;
+
+    angle_set_point = angle_set_point > 5 ? 5 : angle_set_point;
+    angle_set_point = angle_set_point < -5 ? -5 : angle_set_point;
+
+    printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
+  }
+
+  // Boucle de controle de l'inclinaison
+  currentMillis = millis();
+
+  if (currentMillis - previousMillisControlLoop1 >= 20)
+  {
+    previousMillisControlLoop1 = currentMillis;
+
+    angle_erreur = angle_set_point - angle_average;
+    angle_erreur_somme = angle_erreur_somme + angle_erreur * dt;
+    vitesse = KP * angle_erreur + KI * (angle_erreur_somme);
+
+    absolute_position = PI * DIAMETRE_ROUE * vitesse / 360;
+  }
 
   moteur_gauche.setSpeed(vitesse);
   moteur_droit.setSpeed(vitesse);
-  
-  //digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 
-  //printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec -> Période : %5dus\r\n", angle_set_point, angle_average, angle_erreur, vitesse, moteur_gauche.getTimerPeriod());
-  //printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
+  // digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
+
+  //
+  // printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
 }
