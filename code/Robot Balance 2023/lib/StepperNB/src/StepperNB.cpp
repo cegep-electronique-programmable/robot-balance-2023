@@ -35,6 +35,21 @@ void StepperNB::setSpeed(float target_speed_degrees_per_second)
     }
 
     // TODO: adjust ratio according to speed range
+    if (target_speed_degrees_per_second < 45 && target_speed_degrees_per_second > -45) {
+        this->setRatio(16);
+    }
+    else if (target_speed_degrees_per_second < 90 && target_speed_degrees_per_second > -90) {
+        this->setRatio(8);
+    }
+    else if (target_speed_degrees_per_second < 180 && target_speed_degrees_per_second > -180) {
+        this->setRatio(4);
+    }
+    else if (target_speed_degrees_per_second < 360 && target_speed_degrees_per_second > -360) {
+        this->setRatio(2);
+    }
+    else {
+        this->setRatio(1);
+    }
 
     // Compute timer period
     float step_per_second = abs(this->target_speed_degrees_per_second) / 360.0 * this->number_of_steps * this->ratio;
