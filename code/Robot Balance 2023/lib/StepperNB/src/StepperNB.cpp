@@ -64,6 +64,11 @@ void StepperNB::setSpeed(float target_speed_degrees_per_second)
     this->timer_period = timer_period;
 }
 
+int StepperNB::getDirection(void)
+{
+    return this->direction;
+}
+
 void StepperNB::setDirection(int direction)
 {
     this->direction = direction;
