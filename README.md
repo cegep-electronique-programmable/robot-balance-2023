@@ -48,11 +48,15 @@ La carte est conçue avec les composants principaux suivants :
 - 1 x Microcontrôleur ESP32-WROOM
 - 2 x Driver de stepper motor Polulu A4988
 - 1 x Accéleromètre, inclinomètre et magnétomètre combiné CMPS12
-- 1 x Accéleromètre TBD
+- 1 x Accéleromètre MXC6655
 - 2 x Boutons utilisateurs
 - 5 x DEL utilisateur RGB en série
 - 2 x Connecteur I2C
 - 1 x Connecteur SPI
+
+#### Alimentations
+
+Pour fonctionner, le robot a besoin d'une alimention de 12VDC sur le terminal block. Le connecteur USB ne permet pas d'alimenter la carte. Il est seulement utiliser pour la programmation et la communication avec l'interface série.
 
 #### Choix des broches du microcontrôleur
 
