@@ -2,6 +2,8 @@
 
 Informations techniques du robot qui tient en équilibre sur deux roues.
 
+![Robot Balance 2023](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/robot.png?raw=true)
+
 ## Présentation
 
 Le **Robot Balance 2023** est une évolution du robot 2017. Les objectifs de la nouvelle version sont :
@@ -39,7 +41,7 @@ Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-
 
 ### Électronique
 
-![render](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/render%20v2.png?raw=true)
+![PCB Assemblé](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/pcba.png?raw=true)
 
 #### Composants principaux
 
