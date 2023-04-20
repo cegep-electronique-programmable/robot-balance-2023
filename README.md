@@ -18,6 +18,8 @@ Le **Robot Balance 2023** est une évolution du robot 2017. Les objectifs de la 
 La mécanique est développée dans Fusion 360 et elle est basée sur un cadre en extrusions d'aluminium.
 Les roues sont entrainées par des moteurs pas-à-pas de type NEMA-17.
 
+![Assemblage](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/animation.gif?raw=true)
+
 ### Électronique
 
 La carte électronique est développée dans Fusion 360 et elle est basée sur :
