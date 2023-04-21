@@ -10,21 +10,33 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
- 
 
 #include <StepperNB.h>
 
+
+unsigned long pixelPrevious = 0;        // Previous Pixel Millis
+unsigned long patternPrevious = 0;      // Previous Pattern Millis
+int           patternCurrent = 0;       // Current Pattern Number
+int           patternInterval = 500;   // Pattern Interval (ms)
+int           pixelInterval = 50;       // Pixel Interval (ms)
+int           pixelQueue = 0;           // Pattern Pixel Queue
+int           pixelCycle = 0;           // Pattern Pixel Cycle
+uint16_t      pixelCurrent = 0;         // Pattern Current Pixel Number
+uint16_t      pixelNumber = NEOPIXEL_COUNT;  // Total Number of Pixels
+
+
 AsyncWebServer server(80);
 
-void recvMsg(uint8_t *data, size_t len){
+void recvMsg(uint8_t *data, size_t len)
+{
   WebSerial.println("Received Data...");
   String d = "";
-  for(int i=0; i < len; i++){
+  for (int i = 0; i < len; i++)
+  {
     d += char(data[i]);
   }
   WebSerial.println(d);
 }
-
 
 StepperNB moteur_gauche(GPIO_DIR_G, GPIO_STEP_G, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G, 200, false);
 StepperNB moteur_droit(GPIO_DIR_D, GPIO_STEP_D, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D, 200, true);
@@ -38,7 +50,6 @@ float target_speed_degrees_per_second_moteur_2 = 45;
 int ratio_moteur_2 = 4;
 int step_per_tour_moteur_2 = 200;
 int delai_timer_moteur_2 = 1000000;
-
 
 int angle_index = 0;
 int angle_samples[10];
@@ -91,7 +102,6 @@ int angle_sp = 8;
 int erreur = 0;
 int output = 0;
 
-
 portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 void IRAM_ATTR Timer0_MoteurG_ISR()
@@ -112,10 +122,11 @@ void IRAM_ATTR Timer0_MoteurG_ISR()
     digitalWrite(GPIO_STEP_G, LOW);
     if (moteur_gauche.getDirection() == 0)
     {
-      absolute_position = absolute_position + 16/moteur_gauche.getRatio();
+      absolute_position = absolute_position + 16 / moteur_gauche.getRatio();
     }
-    else {
-      absolute_position = absolute_position - 16/moteur_gauche.getRatio();
+    else
+    {
+      absolute_position = absolute_position - 16 / moteur_gauche.getRatio();
     }
   }
 
@@ -149,7 +160,6 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
   interrupts();
   portEXIT_CRITICAL(&timerMux);
 }
-
 
 // Accéléromètre
 MXC6655 accel;
@@ -238,6 +248,101 @@ int initialisationsNeoPixel(void)
   return 0;
 }
 
+// Some functions of our own for creating animated effects -----------------
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  WheelPos = 255 - WheelPos;
+  if(WheelPos < 85) {
+    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  }
+  if(WheelPos < 170) {
+    WheelPos -= 85;
+    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+  WheelPos -= 170;
+  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+}
+
+// Fill pixels pixels one after another with a color. pixels is NOT cleared
+// first; anything there will be covered pixel by pixel. Pass in color
+// (as a single 'packed' 32-bit value, which you can get by calling
+// pixels.Color(red, green, blue) as shown in the loop() function above),
+// and a delay time (in milliseconds) between pixels.
+void colorWipe(uint32_t color, int wait) {
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   //  Update delay time
+  pixels.setPixelColor(pixelCurrent, color); //  Set pixel's color (in RAM)
+  pixels.show();                             //  Update pixels to match
+  pixelCurrent++;                           //  Advance current pixel
+  if(pixelCurrent >= pixelNumber)           //  Loop the pattern from the first LED
+    pixelCurrent = 0;
+}
+
+// creates a reverse colorWipe
+void colorWipeReverse(uint32_t color, int wait) {
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   //  Update delay time
+  pixels.setPixelColor(pixelCurrent, color); //  Set pixel's color (in RAM)
+  pixels.show();                             //  Update pixels to match
+  pixelCurrent--;                           //  Advance current pixel
+  if(pixelCurrent < 0)                      //  Loop the pattern from the first LED
+    pixelCurrent = pixelNumber - 1;
+}
+
+// Theater-marquee-style chasing lights. Pass in a color (32-bit value,
+// a la pixels.Color(r,g,b) as mentioned above), and a delay time (in ms)
+// between frames.
+void theaterChase(uint32_t color, int wait) {
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   //  Update delay time
+  for(int i = 0; i < pixelNumber; i++) {
+    pixels.setPixelColor(i + pixelQueue, color); //  Set pixel's color (in RAM)
+  }
+  pixels.show();                             //  Update pixels to match
+  for(int i=0; i < pixelNumber; i+=3) {
+    pixels.setPixelColor(i + pixelQueue, pixels.Color(0, 0, 0)); //  Set pixel's color (in RAM)
+  }
+  pixelQueue++;                             //  Advance current pixel
+  if(pixelQueue >= 3)
+    pixelQueue = 0;                         //  Loop the pattern from the first LED
+}
+
+// Rainbow cycle along whole pixels. Pass delay time (in ms) between frames.
+void rainbow(uint8_t wait) {
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   
+  for(uint16_t i=0; i < pixelNumber; i++) {
+    pixels.setPixelColor(i, Wheel((i + pixelCycle) & 255)); //  Update delay time  
+  }
+  pixels.show();                             //  Update pixels to match
+  pixelCycle++;                             //  Advance current cycle
+  if(pixelCycle >= 256)
+    pixelCycle = 0;                         //  Loop the cycle back to the begining
+}
+
+//Theatre-style crawling lights with rainbow effect
+void theaterChaseRainbow(uint8_t wait) {
+  if(pixelInterval != wait)
+    pixelInterval = wait;                   //  Update delay time  
+  for(int i=0; i < pixelNumber; i+=3) {
+    pixels.setPixelColor(i + pixelQueue, Wheel((i + pixelCycle) % 255)); //  Update delay time  
+  }
+  pixels.show();
+  for(int i=0; i < pixelNumber; i+=3) {
+    pixels.setPixelColor(i + pixelQueue, pixels.Color(0, 0, 0)); //  Update delay time  
+  }      
+  pixelQueue++;                           //  Advance current queue  
+  pixelCycle++;                           //  Advance current cycle
+  if(pixelQueue >= 3)
+    pixelQueue = 0;                       //  Loop
+  if(pixelCycle >= 256)
+    pixelCycle = 0;                       //  Loop
+}
+
+
+
 void setup()
 {
   int initilisation_reussie = 0;
@@ -246,7 +351,7 @@ void setup()
   initilisation_reussie += initialisationGPIO();
 
   // I2C
-  Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
+  //Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
   delay(500);
 
@@ -355,12 +460,59 @@ void setup()
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 
   SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
-}
 
+}
 
 void loop()
 {
   ArduinoOTA.handle();
+   // Fill along the length of the pixels in various colors...
+  //colorWipe(pixels.Color(255,   0,   0)     , 50); // Red
+  //colorWipe(pixels.Color(  0, 255,   0)     , 50); // Green
+  //colorWipe(pixels.Color(  0,   0, 255)     , 50); // Blue
+  //colorWipe(pixels.Color(  0,   0,   0, 255), 50); // True white (not RGB white)
+
+   unsigned long currentMillis = millis();                     //  Update current time
+  if((currentMillis - patternPrevious) >= patternInterval) {  //  Check for expired time
+    patternPrevious = currentMillis;
+    patternCurrent++;                                         //  Advance to next pattern
+    if(patternCurrent >= 6)
+      patternCurrent = 0;
+
+    WebSerial.print("Allo");
+  }
+  
+  if(currentMillis - pixelPrevious >= pixelInterval) {        //  Check for expired time
+    pixelPrevious = currentMillis;                            //  Run current frame
+    switch (patternCurrent) {
+      case 7:
+        break;
+      case 6:
+        break;     
+      case 5:
+        break;
+      case 4:
+        colorWipeReverse(pixels.Color(0, 0, 0), 50); // Red
+        break;
+      case 3:
+        colorWipeReverse(pixels.Color(0, 0, 255), 50); // Blue
+        break;
+      case 2:
+        break;
+      case 1:
+        colorWipe(pixels.Color(0, 0, 0), 50); // Green
+        break;        
+      default:
+        colorWipe(pixels.Color(255, 0, 0), 50); // Red
+        break;
+    }
+  }
+
+  //pulseWhite(5);
+
+  //rainbowFade2White(3, 3, 1);
+  /*
+  
 
   int nReceived = 0;
   int angle_0_255 = 0;
@@ -416,7 +568,6 @@ void loop()
   }
   angle_average = (float)angle_average * 0.1;
 
-
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
@@ -431,11 +582,9 @@ void loop()
     angle_set_point = angle_set_point > 10 ? 10 : angle_set_point;
     angle_set_point = angle_set_point < 0 ? 0 : angle_set_point;
 
-    //printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
+    // printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
     WebSerial.print("Angle: ");
     WebSerial.println(angle_average);
-    
-
   }
 
   // Boucle de controle de l'inclinaison
@@ -459,6 +608,6 @@ void loop()
 
   //
   // printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
-
-  
+  */
 }
+
