@@ -5,22 +5,19 @@
 * Notes : 
 */
 
+/* MQTT library from PlatformIO */
 #include <PubSubClient.h>
 
+/* MQTT server infos */
 #define MQTT_HOST "broker.hivemq.com"
 #define MQTT_PORT 1883
-#define MQTT_ID "Robot"
-#define MQTT_USER "Balance"
 #define MQTT_TOPIC "cm/robot/balance"
-
-// MQTT client creation
-PubSubClient client(espClient);
 const char *mqtt_server = MQTT_HOST;
 
-// MQTT message creation
-unsigned long lastMsg = 0;
-#define MSG_BUFFER_SIZE (50)
-const char *msg[MSG_BUFFER_SIZE];
+// MQTT client creation
+#define MQTT_ID "Robot"
+#define MQTT_USER "Balance"
+PubSubClient client(espClient);
 
 // ----------------------------- MQTT Functions for SETUP()
 
@@ -43,30 +40,6 @@ void callbackMQTT(char *topic, byte *payload, unsigned int length)
    Serial.println();
 }
 
-/* Reconnect to MQTT */
-void reconnectMQTT()
-{
-   // Loop until we're reconnected
-   if (!client.connected())
-   {
-      Serial.print("Attempting MQTT connection...");
-      // Attempt to connect
-      if (client.connect(MQTT_ID)) // if (client.connect(MQTT_ID, MQTT_USER, MQTT_PASS))
-      {
-         Serial.println("connected");
-         delay(3000);
-      }
-      else
-      {
-         Serial.print("failed, rc=");
-         Serial.print(client.state());
-         Serial.println(" try again in 3 seconds");
-         // Wait 3 seconds before retrying
-         delay(3000);
-      }
-   }
-}
-
 void setupMQTT()
 {
    client.setServer(mqtt_server, 1883);
@@ -87,22 +60,22 @@ void initPrint()
 /* Reconnect to MQTT */
 void reconnectMQTT()
 {
-   // Loop until we're reconnected
+   // Check connection
    if (!client.connected())
+   // Attempt to connect
    {
       Serial.print("Attempting MQTT connection...");
-      // Attempt to connect
-      if (client.connect(MQTT_ID)) // if (client.connect(MQTT_ID, MQTT_USER, MQTT_PASS))
+      if (client.connect(MQTT_ID))
+      // Connection successful
       {
          Serial.println("connected");
          delay(3000);
-      }
-      else
+      } else
+      // Connection failed
       {
          Serial.print("failed, rc=");
          Serial.print(client.state());
          Serial.println(" try again in 3 seconds");
-         // Wait 3 seconds before retrying
          delay(3000);
       }
    }
@@ -111,4 +84,4 @@ void reconnectMQTT()
 /* Publish to MQTT */
 //* client.publish(MQTT_TOPIC, data);
 
-
+// ----------------------------- END of MQTT LOOP() section
