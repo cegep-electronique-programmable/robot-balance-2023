@@ -34,7 +34,6 @@ void StepperNB::setSpeed(float target_speed_degrees_per_second)
         this->setDirection(1);
     }
 
-    // TODO: adjust ratio according to speed range
     if (target_speed_degrees_per_second < 45 && target_speed_degrees_per_second > -45) {
         this->setRatio(16);
     }

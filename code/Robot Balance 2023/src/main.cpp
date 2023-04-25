@@ -49,7 +49,7 @@ unsigned long previousMillisControlLoop2;
 
 float angle_set_point = 5;
 int angle = 0;
-float vitesse = 0;
+float vitesse = 90;
 
 float absolute_position_set_point = 0;
 int32_t absolute_position = 0;
@@ -61,28 +61,28 @@ float angle_erreur_somme = 0;
 #define KP_SPEED 0.001
 #define DIAMETRE_ROUE 0.91
 
-#define KP 75
-#define KI 100
+#define KP -75
+#define KI 0
 float dt = 0.02;
 
-#define WIFI_ACTIVE ENTERPRISE
+// #define WIFI_ACTIVE ENTERPRISE
 
 #include "secrets.h"
 
-#ifdef WIFI_ACTIVE
-#include <WiFi.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
-#if WIFI_ACTIVE != ENTERPRISE
-const char *host = WIFI_HOST_NAME;
-const char *ssid = WIFI_SSID;
-const char *password = WIFI_PASSWORD;
-#else
-#include "esp_wpa2.h"
-const char *ssid = EAP_SSID;
-int counter = 0;
-#endif
-#endif
+// #ifdef WIFI_ACTIVE
+// #include <WiFi.h>
+// #include <WiFiUdp.h>
+// #include <ArduinoOTA.h>
+// #if WIFI_ACTIVE != ENTERPRISE
+// const char *host = WIFI_HOST_NAME;
+// const char *ssid = WIFI_SSID;
+// const char *password = WIFI_PASSWORD;
+// #else
+// #include "esp_wpa2.h"
+// const char *ssid = EAP_SSID;
+// int counter = 0;
+// #endif
+// #endif
 
 hw_timer_t *Timer0_Cfg = NULL; // Moteur Gauche
 hw_timer_t *Timer3_Cfg = NULL; // Moteur Droit
@@ -240,106 +240,107 @@ int initialisationsNeoPixel(void)
 
 void setup()
 {
+  Serial.begin(115200);
+  Serial.println("Booting");
+
   int initilisation_reussie = 0;
-  initilisation_reussie += initialisationsNeoPixel();
-  initilisation_reussie += initialisationUART();
+  // initilisation_reussie += initialisationsNeoPixel();
+  // initilisation_reussie += initialisationUART();
   initilisation_reussie += initialisationGPIO();
 
   // I2C
   Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
+  
+  // Serial.println("delay");
 
   delay(500);
 
-  Serial.begin(115200);
-  Serial.println("Booting");
+  
 
-#ifdef WIFI_ACTIVE
-  WiFi.mode(WIFI_STA);
-#if WIFI_ACTIVE != ENTERPRISE
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED)
-  {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-#else
-  WiFi.disconnect(true);
-  WiFi.mode(WIFI_STA);
-  esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
-  esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
-  esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD));
-  esp_wifi_sta_wpa2_ent_enable();
-  WiFi.begin(ssid);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-    counter++;
-    if (counter >= 60)
-    { // after 30 seconds timeout - reset board
-      ESP.restart();
-    }
-  }
-#endif
+// #ifdef WIFI_ACTIVE
+//   WiFi.mode(WIFI_STA);
+// #if WIFI_ACTIVE != ENTERPRISE
+//   WiFi.begin(ssid, password);
+//   while (WiFi.waitForConnectResult() != WL_CONNECTED)
+//   {
+//     Serial.println("Connection Failed! Rebooting...");
+//     delay(5000);
+//     ESP.restart();
+//   }
+// #else
+//   WiFi.disconnect(true);
+//   WiFi.mode(WIFI_STA);
+//   esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
+//   esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
+//   esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD));
+//   esp_wifi_sta_wpa2_ent_enable();
+//   WiFi.begin(ssid);
+//   while (WiFi.status() != WL_CONNECTED)
+//   {
+//     delay(500);
+//     Serial.print(".");
+//     counter++;
+//     if (counter >= 60)
+//     { // after 30 seconds timeout - reset board
+//       ESP.restart();
+//     }
+//   }
+// #endif
 
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
+//   Serial.println("Ready");
+//   Serial.print("IP address: ");
+//   Serial.println(WiFi.localIP());
 
-  // Port defaults to 3232
-  // ArduinoOTA.setPort(3232);
+//   // Port defaults to 3232
+//   // ArduinoOTA.setPort(3232);
 
-  // Hostname defaults to esp3232-[MAC]
-  ArduinoOTA.setHostname("myesp32");
+//   // Hostname defaults to esp3232-[MAC]
+//   ArduinoOTA.setHostname("myesp32");
 
-  // No authentication by default
-  // ArduinoOTA.setPassword("admin");
+//   // No authentication by default
+//   // ArduinoOTA.setPassword("admin");
 
-  // Password can be set with it's md5 value as well
-  // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
-  // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
+//   // Password can be set with it's md5 value as well
+//   // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
+//   // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
 
-  ArduinoOTA
-      .onStart([]()
-               {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH)
-        type = "sketch";
-      else // U_SPIFFS
-        type = "filesystem";
+//   ArduinoOTA
+//       .onStart([]()
+//                {
+//       String type;
+//       if (ArduinoOTA.getCommand() == U_FLASH)
+//         type = "sketch";
+//       else // U_SPIFFS
+//         type = "filesystem";
 
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type); })
-      .onEnd([]()
-             { Serial.println("\nEnd"); })
-      .onProgress([](unsigned int progress, unsigned int total)
-                  { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); })
-      .onError([](ota_error_t error)
-               {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-      else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-      else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+//       // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+//       Serial.println("Start updating " + type); })
+//       .onEnd([]()
+//              { Serial.println("\nEnd"); })
+//       .onProgress([](unsigned int progress, unsigned int total)
+//                   { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); })
+//       .onError([](ota_error_t error)
+//                {
+//       Serial.printf("Error[%u]: ", error);
+//       if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
+//       else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
+//       else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
+//       else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
+//       else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
 
-  ArduinoOTA.begin();
+//   ArduinoOTA.begin();
 
-#endif
+// #endif
 
-  WebSerial.begin(&server);
-  WebSerial.msgCallback(recvMsg);
-  server.begin();
+//   WebSerial.begin(&server);
+//   WebSerial.msgCallback(recvMsg);
+//   server.begin();
 
   // I2C
   Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
   moteur_gauche.setSpeed(0);
   moteur_droit.setSpeed(0);
-
-  moteur_gauche.setRatio(16);
-  moteur_droit.setRatio(16);
 
   Timer0_Cfg = timerBegin(0, 80, true); // timer incrémente toutes les 1us
   timerAttachInterrupt(Timer0_Cfg, &Timer0_MoteurG_ISR, true);
@@ -355,12 +356,14 @@ void setup()
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 
   SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
+  // Serial.println("setup terminé");
+
 }
 
 
 void loop()
 {
-  ArduinoOTA.handle();
+  // ArduinoOTA.handle();
 
   int nReceived = 0;
   int angle_0_255 = 0;
@@ -382,6 +385,8 @@ void loop()
   else
   {
     angle_0_255 = data[4];
+    // Serial.println("good CMPS12");
+
   }
 
   if (angle_0_255 > 127)
@@ -399,6 +404,8 @@ void loop()
   float accZ = accel.getAccel(2, 0);
   float temp = accel.getTemp();
   float theta = atan2(accX, accZ) * 180 / PI;
+  // Serial.println("acc good");
+
 
 // Moving average on angle over 10 samples
 #define RATIO 0.95
@@ -417,7 +424,7 @@ void loop()
   angle_average = (float)angle_average * 0.1;
 
 
-  // Boucle de controle de la vitesse horizontale
+  // // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillisControlLoop2 >= 200)
@@ -432,8 +439,8 @@ void loop()
     angle_set_point = angle_set_point < 0 ? 0 : angle_set_point;
 
     //printf("SP: %5.2f, Angle: %5.2f, Erreur: %5.2f, Vitesse: %7.2f°/sec\r\n", angle_set_point, angle_average, angle_erreur, vitesse);
-    WebSerial.print("Angle: ");
-    WebSerial.println(angle_average);
+    // WebSerial.print("Angle: ");
+    // WebSerial.println(angle_average);
     
 
   }
@@ -454,6 +461,7 @@ void loop()
 
   moteur_gauche.setSpeed(vitesse);
   moteur_droit.setSpeed(vitesse);
+  // Serial.println("ok");
 
   // digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 
