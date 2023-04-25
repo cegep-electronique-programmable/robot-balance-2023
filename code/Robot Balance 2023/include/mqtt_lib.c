@@ -5,6 +5,8 @@
 * Notes : 
 */
 
+// ----------------------------- WIFI Functions 
+
 /* MQTT library from PlatformIO */
 #include <PubSubClient.h>
 
@@ -15,11 +17,10 @@
 const char *mqtt_server = MQTT_HOST;
 
 // MQTT client creation
-#define MQTT_ID "Robot"
-#define MQTT_USER "Balance"
-PubSubClient client(espClient);
+#define MQTT_ID "Balance"
+PubSubClient clientMQTT(clientWIFI);
 
-// ----------------------------- MQTT Functions for SETUP()
+// ----------------------------- MQTT Functions 
 
 /* Receive and print messages from MQTT */
 void callbackMQTT(char *topic, byte *payload, unsigned int length)
@@ -40,32 +41,26 @@ void callbackMQTT(char *topic, byte *payload, unsigned int length)
    Serial.println();
 }
 
+//! The only function to put in the main/setup() for MQTT
 void setupMQTT()
 {
-   client.setServer(mqtt_server, 1883);
-   client.setCallback(callbackMQTT);
+   clientMQTT.setServer(MQTT_HOST, MQTT_PORT);
+   clientMQTT.setCallback(callbackMQTT);
+   clientMQTT.connect(MQTT_ID);
 }
 
-//! PUT AT END OF SETUP !//
-void initPrint()
-{
-   Serial.println("- - - - - - - - - - - - - Initialized - - - - - - - - - - - - - ");
-}
-
-// ----------------------------- END of MQTT SETUP() section
-
-
-// ----------------------------- MQTT Functions in LOOP()
-
-/* Reconnect to MQTT */
+//! The only function to put in the main/loop() for MQTT
 void reconnectMQTT()
 {
+   // Stay 
+   clientMQTT.loop();
+
    // Check connection
-   if (!client.connected())
+   if (!clientMQTT.connected())
    // Attempt to connect
    {
       Serial.print("Attempting MQTT connection...");
-      if (client.connect(MQTT_ID))
+      if (clientMQTT.connect(MQTT_ID))
       // Connection successful
       {
          Serial.println("connected");
@@ -74,7 +69,7 @@ void reconnectMQTT()
       // Connection failed
       {
          Serial.print("failed, rc=");
-         Serial.print(client.state());
+         Serial.print(clientMQTT.state());
          Serial.println(" try again in 3 seconds");
          delay(3000);
       }
@@ -82,6 +77,5 @@ void reconnectMQTT()
 }
 
 /* Publish to MQTT */
-//* client.publish(MQTT_TOPIC, data);
+//* clientMQTT.publish(MQTT_TOPIC, data);
 
-// ----------------------------- END of MQTT LOOP() section

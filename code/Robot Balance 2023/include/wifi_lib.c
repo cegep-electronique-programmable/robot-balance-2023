@@ -23,13 +23,8 @@
 	#endif
 #endif
 
-//////////////////////////////////////////////////////////////////////////
+// ----------------------------- WIFI Functions
 
-// ----------------------------- WIFI Functions for SETUP()
-
-
-
-// ----------------------------- Connecting to WIFI
 String translateEncryptionType(wifi_auth_mode_t encryptionType)
 {
 	switch (encryptionType)
