@@ -5,38 +5,10 @@
 #include <Wire.h>
 #include <SPI.h>
 #include "MXC6655.h"
-#include <Adafruit_NeoPixel.h>
-
-#include <AsyncTCP.h>
-#include <ESPAsyncWebServer.h>
-#include <WebSerial.h>
+#include "DEL.h"
+#include "ota.h"
 
 #include <StepperNB.h>
-
-
-unsigned long pixelPrevious = 0;        // Previous Pixel Millis
-unsigned long patternPrevious = 0;      // Previous Pattern Millis
-int           patternCurrent = 0;       // Current Pattern Number
-int           patternInterval = 500;   // Pattern Interval (ms)
-int           pixelInterval = 50;       // Pixel Interval (ms)
-int           pixelQueue = 0;           // Pattern Pixel Queue
-int           pixelCycle = 0;           // Pattern Pixel Cycle
-uint16_t      pixelCurrent = 0;         // Pattern Current Pixel Number
-uint16_t      pixelNumber = NEOPIXEL_COUNT;  // Total Number of Pixels
-
-
-AsyncWebServer server(80);
-
-void recvMsg(uint8_t *data, size_t len)
-{
-  WebSerial.println("Received Data...");
-  String d = "";
-  for (int i = 0; i < len; i++)
-  {
-    d += char(data[i]);
-  }
-  WebSerial.println(d);
-}
 
 StepperNB moteur_gauche(GPIO_DIR_G, GPIO_STEP_G, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G, 200, false);
 StepperNB moteur_droit(GPIO_DIR_D, GPIO_STEP_D, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D, 200, true);
@@ -75,25 +47,6 @@ float angle_erreur_somme = 0;
 #define KP 75
 #define KI 100
 float dt = 0.02;
-
-#define WIFI_ACTIVE ENTERPRISE
-
-#include "secrets.h"
-
-#ifdef WIFI_ACTIVE
-#include <WiFi.h>
-#include <WiFiUdp.h>
-#include <ArduinoOTA.h>
-#if WIFI_ACTIVE != ENTERPRISE
-const char *host = WIFI_HOST_NAME;
-const char *ssid = WIFI_SSID;
-const char *password = WIFI_PASSWORD;
-#else
-#include "esp_wpa2.h"
-const char *ssid = EAP_SSID;
-int counter = 0;
-#endif
-#endif
 
 hw_timer_t *Timer0_Cfg = NULL; // Moteur Gauche
 hw_timer_t *Timer3_Cfg = NULL; // Moteur Droit
@@ -164,10 +117,6 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 // Accéléromètre
 MXC6655 accel;
 
-// Instanciation des dels
-Adafruit_NeoPixel pixels(NEOPIXEL_COUNT, NEOPIXEL_PIN, NEO_GRB + NEO_KHZ800);
-int pixel = 0;
-
 int timeoutVAR = 0;
 
 // Fonction d'initialisation des GPIO
@@ -234,115 +183,6 @@ int initialisationUART(void)
   return 0;
 }
 
-int initialisationsNeoPixel(void)
-{
-  pixels.begin();
-  pixels.clear();
-  pixels.setBrightness(0x22);
-  // Toutes les DEL en rouge pendant l'initialisation
-  for (int i = 0; i < NEOPIXEL_COUNT; i++)
-  {
-    pixels.setPixelColor(i, pixels.Color(0x00, 0x00, 0x00));
-  }
-  pixels.show();
-  return 0;
-}
-
-// Some functions of our own for creating animated effects -----------------
-
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  WheelPos = 255 - WheelPos;
-  if(WheelPos < 85) {
-    return pixels.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  }
-  if(WheelPos < 170) {
-    WheelPos -= 85;
-    return pixels.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-  WheelPos -= 170;
-  return pixels.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-}
-
-// Fill pixels pixels one after another with a color. pixels is NOT cleared
-// first; anything there will be covered pixel by pixel. Pass in color
-// (as a single 'packed' 32-bit value, which you can get by calling
-// pixels.Color(red, green, blue) as shown in the loop() function above),
-// and a delay time (in milliseconds) between pixels.
-void colorWipe(uint32_t color, int wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   //  Update delay time
-  pixels.setPixelColor(pixelCurrent, color); //  Set pixel's color (in RAM)
-  pixels.show();                             //  Update pixels to match
-  pixelCurrent++;                           //  Advance current pixel
-  if(pixelCurrent >= pixelNumber)           //  Loop the pattern from the first LED
-    pixelCurrent = 0;
-}
-
-// creates a reverse colorWipe
-void colorWipeReverse(uint32_t color, int wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   //  Update delay time
-  pixels.setPixelColor(pixelCurrent, color); //  Set pixel's color (in RAM)
-  pixels.show();                             //  Update pixels to match
-  pixelCurrent--;                           //  Advance current pixel
-  if(pixelCurrent < 0)                      //  Loop the pattern from the first LED
-    pixelCurrent = pixelNumber - 1;
-}
-
-// Theater-marquee-style chasing lights. Pass in a color (32-bit value,
-// a la pixels.Color(r,g,b) as mentioned above), and a delay time (in ms)
-// between frames.
-void theaterChase(uint32_t color, int wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   //  Update delay time
-  for(int i = 0; i < pixelNumber; i++) {
-    pixels.setPixelColor(i + pixelQueue, color); //  Set pixel's color (in RAM)
-  }
-  pixels.show();                             //  Update pixels to match
-  for(int i=0; i < pixelNumber; i+=3) {
-    pixels.setPixelColor(i + pixelQueue, pixels.Color(0, 0, 0)); //  Set pixel's color (in RAM)
-  }
-  pixelQueue++;                             //  Advance current pixel
-  if(pixelQueue >= 3)
-    pixelQueue = 0;                         //  Loop the pattern from the first LED
-}
-
-// Rainbow cycle along whole pixels. Pass delay time (in ms) between frames.
-void rainbow(uint8_t wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   
-  for(uint16_t i=0; i < pixelNumber; i++) {
-    pixels.setPixelColor(i, Wheel((i + pixelCycle) & 255)); //  Update delay time  
-  }
-  pixels.show();                             //  Update pixels to match
-  pixelCycle++;                             //  Advance current cycle
-  if(pixelCycle >= 256)
-    pixelCycle = 0;                         //  Loop the cycle back to the begining
-}
-
-//Theatre-style crawling lights with rainbow effect
-void theaterChaseRainbow(uint8_t wait) {
-  if(pixelInterval != wait)
-    pixelInterval = wait;                   //  Update delay time  
-  for(int i=0; i < pixelNumber; i+=3) {
-    pixels.setPixelColor(i + pixelQueue, Wheel((i + pixelCycle) % 255)); //  Update delay time  
-  }
-  pixels.show();
-  for(int i=0; i < pixelNumber; i+=3) {
-    pixels.setPixelColor(i + pixelQueue, pixels.Color(0, 0, 0)); //  Update delay time  
-  }      
-  pixelQueue++;                           //  Advance current queue  
-  pixelCycle++;                           //  Advance current cycle
-  if(pixelQueue >= 3)
-    pixelQueue = 0;                       //  Loop
-  if(pixelCycle >= 256)
-    pixelCycle = 0;                       //  Loop
-}
-
-
-
 void setup()
 {
   int initilisation_reussie = 0;
@@ -351,91 +191,14 @@ void setup()
   initilisation_reussie += initialisationGPIO();
 
   // I2C
-  //Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
+  // Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
 
   delay(500);
 
   Serial.begin(115200);
   Serial.println("Booting");
 
-#ifdef WIFI_ACTIVE
-  WiFi.mode(WIFI_STA);
-#if WIFI_ACTIVE != ENTERPRISE
-  WiFi.begin(ssid, password);
-  while (WiFi.waitForConnectResult() != WL_CONNECTED)
-  {
-    Serial.println("Connection Failed! Rebooting...");
-    delay(5000);
-    ESP.restart();
-  }
-#else
-  WiFi.disconnect(true);
-  WiFi.mode(WIFI_STA);
-  esp_wifi_sta_wpa2_ent_set_identity((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
-  esp_wifi_sta_wpa2_ent_set_username((uint8_t *)EAP_IDENTITY, strlen(EAP_IDENTITY));
-  esp_wifi_sta_wpa2_ent_set_password((uint8_t *)EAP_PASSWORD, strlen(EAP_PASSWORD));
-  esp_wifi_sta_wpa2_ent_enable();
-  WiFi.begin(ssid);
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-    counter++;
-    if (counter >= 60)
-    { // after 30 seconds timeout - reset board
-      ESP.restart();
-    }
-  }
-#endif
-
-  Serial.println("Ready");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  // Port defaults to 3232
-  // ArduinoOTA.setPort(3232);
-
-  // Hostname defaults to esp3232-[MAC]
-  ArduinoOTA.setHostname("myesp32");
-
-  // No authentication by default
-  // ArduinoOTA.setPassword("admin");
-
-  // Password can be set with it's md5 value as well
-  // MD5(admin) = 21232f297a57a5a743894a0e4a801fc3
-  // ArduinoOTA.setPasswordHash("21232f297a57a5a743894a0e4a801fc3");
-
-  ArduinoOTA
-      .onStart([]()
-               {
-      String type;
-      if (ArduinoOTA.getCommand() == U_FLASH)
-        type = "sketch";
-      else // U_SPIFFS
-        type = "filesystem";
-
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
-      Serial.println("Start updating " + type); })
-      .onEnd([]()
-             { Serial.println("\nEnd"); })
-      .onProgress([](unsigned int progress, unsigned int total)
-                  { Serial.printf("Progress: %u%%\r", (progress / (total / 100))); })
-      .onError([](ota_error_t error)
-               {
-      Serial.printf("Error[%u]: ", error);
-      if (error == OTA_AUTH_ERROR) Serial.println("Auth Failed");
-      else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
-      else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
-      else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-      else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
-
-  ArduinoOTA.begin();
-
-#endif
-
-  WebSerial.begin(&server);
-  WebSerial.msgCallback(recvMsg);
-  server.begin();
+  initWifi();
 
   // I2C
   Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL);
@@ -460,59 +223,42 @@ void setup()
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 
   SPI.begin(GPIO_VPSI_SCK, GPIO_VPSI_MISO, GPIO_VPSI_MOSI, GPIO_VPSI_CS1);
-
 }
 
 void loop()
 {
+  // Doit tjrs être appelé pour que le OTA fonctionne
   ArduinoOTA.handle();
-   // Fill along the length of the pixels in various colors...
-  //colorWipe(pixels.Color(255,   0,   0)     , 50); // Red
-  //colorWipe(pixels.Color(  0, 255,   0)     , 50); // Green
-  //colorWipe(pixels.Color(  0,   0, 255)     , 50); // Blue
-  //colorWipe(pixels.Color(  0,   0,   0, 255), 50); // True white (not RGB white)
 
-   unsigned long currentMillis = millis();                     //  Update current time
-  if((currentMillis - patternPrevious) >= patternInterval) {  //  Check for expired time
+  // Fill along the length of the pixels in various colors...
+  // colorWipe(pixels.Color(255,   0,   0)     , 50); // Red
+  // colorWipe(pixels.Color(  0, 255,   0)     , 50); // Green
+  // colorWipe(pixels.Color(  0,   0, 255)     , 50); // Blue
+  // colorWipe(pixels.Color(  0,   0,   0, 255), 50); // True white (not RGB white)
+ 
+  unsigned long currentMillis = millis(); //  Update current time
+  if ((currentMillis - patternPrevious) >= patternInterval)
+  { //  Check for expired time
     patternPrevious = currentMillis;
-    patternCurrent++;                                         //  Advance to next pattern
-    if(patternCurrent >= 6)
+    patternCurrent++; //  Advance to next pattern
+    if (patternCurrent >= 2)
       patternCurrent = 0;
-
-    WebSerial.print("Allo");
   }
-  
-  if(currentMillis - pixelPrevious >= pixelInterval) {        //  Check for expired time
-    pixelPrevious = currentMillis;                            //  Run current frame
-    switch (patternCurrent) {
-      case 7:
-        break;
-      case 6:
-        break;     
-      case 5:
-        break;
-      case 4:
-        colorWipeReverse(pixels.Color(0, 0, 0), 50); // Red
-        break;
-      case 3:
-        colorWipeReverse(pixels.Color(0, 0, 255), 50); // Blue
-        break;
-      case 2:
-        break;
-      case 1:
-        colorWipe(pixels.Color(0, 0, 0), 50); // Green
-        break;        
-      default:
-        colorWipe(pixels.Color(255, 0, 0), 50); // Red
-        break;
+  if (currentMillis - pixelPrevious >= pixelInterval)
+  {                                //  Check for expired time
+    pixelPrevious = currentMillis; //  Run current frame
+    switch (patternCurrent)
+    {
+    case 1:
+      colorWipe(pixels.Color(0, 0, 0), 50); // Blank
+      break;
+    default:
+      colorWipe(pixels.Color(255, 0, 0), 50); // Red
+      break;
     }
   }
-
-  //pulseWhite(5);
-
-  //rainbowFade2White(3, 3, 1);
   /*
-  
+
 
   int nReceived = 0;
   int angle_0_255 = 0;
@@ -610,4 +356,3 @@ void loop()
   // printf("Accelerations X: %5.2f, Z: %5.2f, Theta: %5.2f, Temps: %5.2f\r\n", accX, accZ, theta, temp);
   */
 }
-

@@ -6,3 +6,5 @@
 #define EAP_SSID "eduroam"
 #define EAP_IDENTITY "cvwo@eva.eduroam.ca"
 #define EAP_PASSWORD "pyknm"
+
+
