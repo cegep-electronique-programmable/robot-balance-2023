@@ -1,0 +1,16 @@
+#define WIFI_ACTIVE 0
+#define EAP_ACTIVE 0
+#define OTA_ACTIVE 0
+#define WEBSERIAL_ACTIVE 0
+#define MQTT_ACTIVE 0
+
+#define MOTORS_ACTIVE 1
+
+#define I2C_ACTIVE 1
+#define CMPS12_ACTIVE 1
+#define SPI_ACTIVE 0
+#define MXC6655_ACTIVE 0
+
+#define NEOPIXEL_ACTIVE 1
+
+
