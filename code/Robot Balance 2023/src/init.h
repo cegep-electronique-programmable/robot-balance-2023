@@ -2,12 +2,15 @@
 #define init_h
 
 #include <Adafruit_NeoPixel.h>
+#include <StepperNB.h>
 
 #include "init.h"
 #include "config.h"
 #include "board_mapping.h"
 #include "interfaces.h"
 #include "secrets.h"
+
+
 
 int initialisationWiFi(void);
 int initialisationI2C(void);

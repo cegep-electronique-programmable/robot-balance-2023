@@ -113,7 +113,7 @@ int initialisationBroches(void)
   pinMode(GPIO_VPSI_MOSI, OUTPUT);
   digitalWrite(GPIO_VPSI_CS1, HIGH);
 
-  // SPI
+  // I2C
   pinMode(GPIO_I2C_SDA, OUTPUT);
   pinMode(GPIO_I2C_SCL, OUTPUT);
 
