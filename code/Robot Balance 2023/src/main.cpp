@@ -164,6 +164,7 @@ void setup()
   timerAlarmEnable(Timer3_Cfg);
 
   // Enable motors
+  pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
   digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 #else
   // Disable motors
@@ -178,6 +179,7 @@ void loop()
 #endif
 
   float tilt = getTiltFromCMPS12();
+  printf("%5.2f\r\n", tilt);
 
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
