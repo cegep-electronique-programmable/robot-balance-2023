@@ -33,7 +33,7 @@ La carte électronique est développée dans Fusion 360 et elle est basée sur :
 
 ### Firmware
 
-Le firmware est développé à l'aide de l'outil PlatformIO. Nous utilisons le framework (TBD: Arduino ou IDK).
+Le firmware est développé à l'aide de l'outil PlatformIO. Nous utilisons le framework Arduino.
 
 Le contrôle se fait à l'aide d'un contrôleur de type Proportionnel-Intégral-Dérivé (PID).
 
@@ -62,7 +62,7 @@ La carte est conçue avec les composants principaux suivants :
 
 #### Alimentations
 
-Pour fonctionner, le robot a besoin d'une alimention de 12VDC sur le terminal block. Le connecteur USB ne permet pas d'alimenter la carte. Il est seulement utiliser pour la programmation et la communication avec l'interface série.
+Pour fonctionner, le robot a besoin d'une alimention de 12VDC sur le terminal block. Le connecteur USB ne permet pas d'alimenter la carte. Il est seulement utilisé pour la programmation et la communication avec l'interface série.
 
 #### Choix des broches du microcontrôleur
 
