@@ -117,7 +117,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float tilt_set_point = 4.5;
+float tilt_set_point = 5;
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
@@ -125,11 +125,11 @@ unsigned long previousMillisControlLoop;
 float tilt_erreur = 0;
 float tilt_erreur_somme = 0;
 
-#define KP_SPEED 0.001
 #define DIAMETRE_ROUE 0.91
 
-#define KP 75
-#define KI 100
+#define TILT_KP -15
+#define TILT_KI -2
+#define TILT_KD 0
 float dt = 0.02;
 /********************************************/
 
@@ -162,15 +162,14 @@ void setup()
   timerAttachInterrupt(Timer3_Cfg, &Timer3_MoteurD_ISR, true);
   timerAlarmWrite(Timer3_Cfg, 1000000, true); // delai d'une seconde au démarrage
   timerAlarmEnable(Timer3_Cfg);
-
-  // Enable motors
-  pinMode(GPIO_ENABLE_MOTEURS, OUTPUT);
-  digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
 #else
   // Disable motors
   digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 #endif
 }
+
+uint8_t tilt_index = 0;
+float tilt_array[10];
 
 void loop()
 {
@@ -179,18 +178,47 @@ void loop()
 #endif
 
   float tilt = getTiltFromCMPS12();
-  printf("%5.2f\r\n", tilt);
 
+  tilt_array[tilt_index] = tilt;
+
+  tilt_index++;
+
+  if (tilt_index >= 10)
+  {
+    tilt_index = 0;
+  }
+
+  tilt = 0;
+  for (int i = 0; i < 10; i++)
+  {
+    tilt += tilt_array[i];
+  }
+  tilt = tilt / 10;
+
+
+  if ((tilt > 25.0) || (tilt < -25.0))
+  {
+    // Disable motors
+    digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
+  }
+  else {
+    // Enable motors
+    digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
+  }
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillisControlLoop >= 20)
+  if (currentMillis - previousMillisControlLoop >= 100)
   {
+    dt = currentMillis - previousMillisControlLoop;
+    dt = dt/1000;
     previousMillisControlLoop = currentMillis;
 
     tilt_erreur = tilt_set_point - tilt;
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
-    vitesse = KP * tilt_erreur + KI * (tilt_erreur_somme);
+    vitesse = TILT_KP * tilt_erreur + TILT_KI * (tilt_erreur_somme);
+
+    printf("%8.6f s,  %5.2f°, %5.2f\r\n", dt, tilt, vitesse);
   }
 
 #if MOTORS_ACTIVE == 1
@@ -202,7 +230,11 @@ void loop()
 float getTiltFromCMPS12(void)
 {
   float tilt = 0;
-  int angle_0_255 = 0;
+  float angle_from_accelerometer = 0;
+  float angle_from_gyro = 0;
+
+  int angle_0_8bits = 0;
+  int angle_0_16bits = 0;
 
   // Send request to CMPS12
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
@@ -219,23 +251,43 @@ float getTiltFromCMPS12(void)
   if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception CMPS12\r\n");
-    angle_0_255 = 1;
+    angle_0_8bits = 1;
   }
   else
   {
     // read register 5
-    angle_0_255 = data[4];
+    angle_0_8bits = data[4];
+    int16_t gyro_x_16bits = data[0x12] << 8 | data[0x13];
+    int16_t accelerometer_x = data[0x0C] << 8 | data[0x0D];
+    int16_t accelerometer_y = data[0x0E] << 8 | data[0x0F];
+    int16_t accelerometer_z = data[0x10] << 8 | data[0x11];
+    angle_from_accelerometer = atan2f(accelerometer_y, accelerometer_z) * 180.0 / PI;
+
+    angle_from_gyro = (float)(gyro_x_16bits - gyro_x_offset) / GYRO_SENSITIVITY * dt * gyro_gain;
+
+    deltaGyroAngle = ((float)((gx - gyroOffset[0])) / GYRO_SENSITIVITY) * dT * gyroGain;
+    filterAngle = gyroFilterConstant * (filterAngle + deltaGyroAngle) + (1 - gyroFilterConstant) * (accAngle);
+
+
+    return angle_from_accelerometer;
+    printf("%d -> %3.2f, %d, %d, %d, %d\r\n", angle_0_8bits, angle_from_accelerometer, gyro_x_16bits, accelerometer_x, accelerometer_y, accelerometer_z);
+    //int16_t gyro_y_16bits = data[0x14] << 8 | data[0x15];
+    //int16_t gyro_z_16bits = data[0x16] << 8 | data[0x17];
+    //printf("%d -> %d, %d, %d\r\n", angle_0_8bits, gyro_x_16bits, gyro_y_16bits, gyro_z_16bits);
   }
 
   // Convert to signed int
-  if (angle_0_255 > 127)
+  if (angle_0_8bits > 127)
   {
-    tilt = angle_0_255 - 256;
+    tilt = angle_0_8bits - 256;
   }
   else
   {
-    tilt = angle_0_255;
+    tilt = angle_0_8bits;
   }
+  #define RATIO 0.3
+  tilt = RATIO * (float)tilt + (1-RATIO) * (float)angle_from_accelerometer;
   // return tilt in degrees
-  return tilt;
+  //printf("%3.3f\r\n", angle_from_accelerometer);
+  return angle_from_accelerometer;
 }
