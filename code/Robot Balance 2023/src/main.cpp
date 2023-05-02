@@ -125,10 +125,40 @@ unsigned long previousMillisControlLoop;
 float pitch_erreur = 0;
 float pitch_erreur_somme = 0;
 
+int16_t x_axis_accelerometre;
+int16_t y_axis_accelerometre;
+int16_t z_axis_accelerometre;
+
+int16_t x_axis_gyro;
+int16_t y_axis_gyro;
+int16_t z_axis_gyro;
+
 #define PITCH_KP -50
 #define PITCH_KI 0
 float dt = 0.100;
 /********************************************/
+
+
+
+ float calcule_acceleration(int raw_data_X, int raw_data_Y, int raw_data_Z)
+ {
+    // float pitch = 180 * atan(raw_data_X / sqrt(pow(raw_data_Y, 2) + pow(raw_data_Z, 2))) / PI;
+    // float roll = 180 * atan(raw_data_Y / sqrt(pow(raw_data_X, 2) + pow(raw_data_Z, 2))) / PI;
+    // return pitch;
+
+    float pitch = 180 * atan2(raw_data_Y , raw_data_Z) / PI;
+    //float roll = 180 * atan() / PI;
+    return pitch;
+    
+ }
+
+ float calcule_correction(float pitch, float gyro_x) // 
+ {
+    
+    return pitch;
+    
+ }
+  
 
 
 
@@ -177,9 +207,12 @@ void loop()
   ArduinoOTA.handle();
 #endif
 
-  float pitch = getPitchFromCMPS12();
-  printf("%5.2f\r\n", pitch);
+  
+  getPitchFromCMPS12();
+  float pitch = calcule_acceleration(x_axis_accelerometre, y_axis_accelerometre, z_axis_accelerometre);
+  // printf("%5.2f\r\n", pitch);
 
+  // printf("Pitch cal : %5.2f\r\n", pitch);
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
@@ -224,6 +257,19 @@ float getPitchFromCMPS12(void)
   {
     // read register 5
     angle_0_255 = data[4];
+    x_axis_accelerometre =      (data[12] << 8) |  data[13];
+    y_axis_accelerometre =      (data[14] << 8) |  data[15];
+    z_axis_accelerometre =      (data[16] << 8) |  data[17];
+
+    x_axis_gyro =               (data[18] << 8) |  data[19];
+    y_axis_gyro =               (data[20] << 8) |  data[21];
+    z_axis_gyro =               (data[22] << 8) |  data[23];
+
+
+    printf("X :%d Y: %d Z: %d\r\n", x_axis_gyro,y_axis_gyro,z_axis_gyro);
+    
+    // printf("X :%d Y: %d Z: %d\r\n", x_axis_accelerometre,y_axis_accelerometre,z_axis_accelerometre);
+
   }
 
   // Convert to signed int
@@ -238,3 +284,4 @@ float getPitchFromCMPS12(void)
   // return pitch in degrees
   return pitch;
 }
+
