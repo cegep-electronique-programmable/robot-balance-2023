@@ -2,6 +2,27 @@
 #include "init.h"
 #include <Wire.h>
 
+#if WIFI_ACTIVE == 1
+#include <WiFi.h>
+#include <WiFiUdp.h>
+#endif
+
+#if EAP_ACTIVE == 1
+#include "esp_wpa2.h"
+#endif
+
+#if OTA_ACTIVE == 1
+#include <ArduinoOTA.h>
+#include "esp_wpa2.h"
+#endif
+
+#if WEBSERIAL_ACTIVE == 1
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+#include <WebSerial.h>
+#endif
+
+
 int initialisationWiFi(void)
 {
 #if WIFI_ACTIVE == 1
