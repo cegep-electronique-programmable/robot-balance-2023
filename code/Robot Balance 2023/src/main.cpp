@@ -39,7 +39,7 @@ int pixel = 0;
 #include <Wire.h>
 #endif
 
-float getTiltFromCMPS12(void);
+float getPitchFromCMPS12(void);
 
 // ***************  SPI  *************** //
 
@@ -117,26 +117,23 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float tilt_set_point = 4.5;
+float pitch_set_point = 5.0;
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
 
-float tilt_erreur = 0;
-float tilt_erreur_somme = 0;
+float pitch_erreur = 0;
+float pitch_erreur_somme = 0;
 
-#define KP_SPEED 0.001
-#define DIAMETRE_ROUE 0.91
-
-#define KP 75
-#define KI 100
-float dt = 0.02;
+#define PITCH_KP -50
+#define PITCH_KI 0
+float dt = 0.100;
 /********************************************/
 
 
 
 
-
+// ***************  SETUP  *************** //
 void setup()
 {
   int initilisation_reussie = 0;
@@ -172,25 +169,27 @@ void setup()
 #endif
 }
 
+
+// ***************  LOOP  *************** //
 void loop()
 {
 #if OTA_ACTIVE == 1
   ArduinoOTA.handle();
 #endif
 
-  float tilt = getTiltFromCMPS12();
-  printf("%5.2f\r\n", tilt);
+  float pitch = getPitchFromCMPS12();
+  printf("%5.2f\r\n", pitch);
 
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillisControlLoop >= 20)
+  if (currentMillis - previousMillisControlLoop >= 100)
   {
     previousMillisControlLoop = currentMillis;
 
-    tilt_erreur = tilt_set_point - tilt;
-    tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
-    vitesse = KP * tilt_erreur + KI * (tilt_erreur_somme);
+    pitch_erreur = pitch_set_point - pitch;
+    pitch_erreur_somme = pitch_erreur_somme + pitch_erreur * dt;
+    vitesse = PITCH_KP * pitch_erreur + PITCH_KI * (pitch_erreur_somme);
   }
 
 #if MOTORS_ACTIVE == 1
@@ -199,9 +198,9 @@ void loop()
 #endif
 }
 
-float getTiltFromCMPS12(void)
+float getPitchFromCMPS12(void)
 {
-  float tilt = 0;
+  float pitch = 0;
   int angle_0_255 = 0;
 
   // Send request to CMPS12
@@ -230,12 +229,12 @@ float getTiltFromCMPS12(void)
   // Convert to signed int
   if (angle_0_255 > 127)
   {
-    tilt = angle_0_255 - 256;
+    pitch = angle_0_255 - 256;
   }
   else
   {
-    tilt = angle_0_255;
+    pitch = angle_0_255;
   }
-  // return tilt in degrees
-  return tilt;
+  // return pitch in degrees
+  return pitch;
 }
