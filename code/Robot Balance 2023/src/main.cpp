@@ -27,6 +27,10 @@
 #include <WebSerial.h>
 #endif
 
+#if MQTT_ACTIVE == 1
+#include <mqtt_lib.h>
+#endif
+
 // ***************  LED  *************** //
 
 #if NEOPIXEL_ACTIVE == 1
@@ -136,15 +140,13 @@ float dt = 0.100;
 // ***************  SETUP  *************** //
 void setup()
 {
-
-  connectToNetwork();
-  setupMQTT();
   int initilisation_reussie = 0;
   initilisation_reussie += initialisationsNeoPixel(pixels);
   initilisation_reussie += initialisationSerie();
   initilisation_reussie += initialisationBroches();
   initilisation_reussie += initialisationI2C();
   initilisation_reussie += initialisationSPI();
+  initilisation_reussie += initialisationWiFi();
 
 #if MOTORS_ACTIVE == 1
   moteur_gauche.setSpeed(0);
@@ -170,6 +172,11 @@ void setup()
   // Disable motors
   digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 #endif
+
+#if MQTT_ACTIVE == 1
+setupMQTT();
+#endif
+
 }
 
 
@@ -178,6 +185,10 @@ void loop()
 {
 #if OTA_ACTIVE == 1
   ArduinoOTA.handle();
+#endif
+
+#if MQTT_ACTIVE == 1
+reconnectMQTT();
 #endif
 
   float pitch = getPitchFromCMPS12();
@@ -199,6 +210,7 @@ void loop()
   moteur_gauche.setSpeed(vitesse);
   moteur_droit.setSpeed(vitesse);
 #endif
+
 }
 
 float getPitchFromCMPS12(void)

@@ -1,13 +1,13 @@
 /*
 !Author : Sorl_Sintoural
 
-? Description : MQTT info for `robot-balance-2023`
+? Description : MQTT for `robot-balance-2023`
 * Notes : 
 */
 
-// ----------------------------- WIFI Functions 
-
 /* MQTT library from PlatformIO */
+#include <WiFi.h>
+#include <WiFiUdp.h>
 #include <PubSubClient.h>
 
 /* MQTT server infos */
@@ -18,7 +18,11 @@ const char *mqtt_server = MQTT_HOST;
 
 // MQTT client creation
 #define MQTT_ID "Balance"
+
+#if WIFI_ACTIVE == 1
+WiFiClient clientWIFI
 PubSubClient clientMQTT(clientWIFI);
+#endif
 
 // ----------------------------- MQTT Functions 
 
@@ -41,6 +45,7 @@ void callbackMQTT(char *topic, byte *payload, unsigned int length)
    Serial.println();
 }
 
+// PUT IN MAIN.CPP -------------------------------------------------
 //! The only function to put in the main/setup() for MQTT
 void setupMQTT()
 {

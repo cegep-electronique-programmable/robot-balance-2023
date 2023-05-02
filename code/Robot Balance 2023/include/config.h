@@ -1,8 +1,8 @@
-#define WIFI_ACTIVE 0
+#define WIFI_ACTIVE 1
 #define EAP_ACTIVE 0
 #define OTA_ACTIVE 0
 #define WEBSERIAL_ACTIVE 0
-#define MQTT_ACTIVE 0
+#define MQTT_ACTIVE 1
 
 #define MOTORS_ACTIVE 1
 
