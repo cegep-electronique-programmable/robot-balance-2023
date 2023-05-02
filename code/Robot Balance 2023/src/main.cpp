@@ -11,8 +11,10 @@
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
 
-
 #include <StepperNB.h>
+
+#include "wifi_lib.c"
+#include "mqtt_lib.c"
 
 AsyncWebServer server(80);
 
@@ -24,7 +26,6 @@ void recvMsg(uint8_t *data, size_t len){
   }
   WebSerial.println(d);
 }
-
 
 StepperNB moteur_gauche(GPIO_DIR_G, GPIO_STEP_G, GPIO_MS1_G, GPIO_MS2_G, GPIO_MS3_G, 200, false);
 StepperNB moteur_droit(GPIO_DIR_D, GPIO_STEP_D, GPIO_MS1_D, GPIO_MS2_D, GPIO_MS3_D, 200, true);
@@ -221,6 +222,9 @@ int initialisationsNeoPixel(void)
 
 void setup()
 {
+
+  connectToNetwork();
+  setupMQTT();
   int initilisation_reussie = 0;
   initilisation_reussie += initialisationsNeoPixel();
   initilisation_reussie += initialisationUART();
@@ -267,6 +271,8 @@ void setup()
 
 void loop()
 {
+  reconnectWIFI();
+  reconnectMQTT();
 
   int nReceived = 0;
   int angle_0_255 = 0;
