@@ -39,7 +39,18 @@ int pixel = 0;
 #include <Wire.h>
 #endif
 
+
+
+void getDataFromCMPS12(uint8_t *data);
+uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = {0};
+
 float getTiltFromCMPS12(void);
+float getAngularSpeedFromCMPS12(void);
+
+unsigned long gyroscope_previous_micro = 0;
+unsigned long gyroscope_current_micro = 0;
+float angle_from_gyro = 0;
+float angle_from_cmps12 = 0;
 
 // ***************  SPI  *************** //
 
@@ -114,32 +125,32 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 }
 #endif
 
-
-
 // ***************  CONTROL  *************** //
-float tilt_set_point = 5;
+float tilt_set_point = 6.85;
+float tilt_speed_set_point = 0;
+
+float tilt_erreur = 0;
+float tilt_erreur_somme = 0;
+float tilt_speed_erreur = 0;
+
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
 
-float tilt_erreur = 0;
-float tilt_erreur_somme = 0;
-
 #define DIAMETRE_ROUE 0.91
 
-#define TILT_KP -15
-#define TILT_KI -2
-#define TILT_KD 0
-float dt = 0.02;
+#define KP -15
+#define KI 0
+#define KD -0.5
+
+float dt = 0.05;
+
 /********************************************/
-
-
-
-
 
 void setup()
 {
   int initilisation_reussie = 0;
+  initilisation_reussie += initialisationWiFi();
   initilisation_reussie += initialisationsNeoPixel(pixels);
   initilisation_reussie += initialisationSerie();
   initilisation_reussie += initialisationBroches();
@@ -195,30 +206,44 @@ void loop()
   }
   tilt = tilt / 10;
 
-
   if ((tilt > 25.0) || (tilt < -25.0))
   {
     // Disable motors
     digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
   }
-  else {
+  else
+  {
     // Enable motors
     digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
   }
+
+  // lecture des capteurs
+  getDataFromCMPS12(data);
+  getTiltFromCMPS12();
+
+
+
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillisControlLoop >= 100)
+  if (currentMillis - previousMillisControlLoop >= dt * 1000)
   {
-    dt = currentMillis - previousMillisControlLoop;
-    dt = dt/1000;
     previousMillisControlLoop = currentMillis;
 
-    tilt_erreur = tilt_set_point - tilt;
+    tilt_erreur = tilt_set_point - getTiltFromCMPS12();
+    tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
-    vitesse = TILT_KP * tilt_erreur + TILT_KI * (tilt_erreur_somme);
+    float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
+    #define ACCELERATION_MAX 150
+    acceleration = acceleration > ACCELERATION_MAX ? ACCELERATION_MAX : acceleration;
+    acceleration = acceleration < -ACCELERATION_MAX ? -ACCELERATION_MAX : acceleration;
+    vitesse = moteur_droit.getSpeed() + acceleration;
+    #define VITESSE_MAX 720
+    vitesse = vitesse > VITESSE_MAX ? VITESSE_MAX : vitesse;
+    vitesse = vitesse < -VITESSE_MAX ? -VITESSE_MAX : vitesse;
 
-    printf("%8.6f s,  %5.2f°, %5.2f\r\n", dt, tilt, vitesse);
+
+    //printf("%5.2f°, %5.2f, %5.2f\r\n", tilt, acceleration, vitesse);
   }
 
 #if MOTORS_ACTIVE == 1
@@ -227,15 +252,8 @@ void loop()
 #endif
 }
 
-float getTiltFromCMPS12(void)
+void getDataFromCMPS12(uint8_t *data)
 {
-  float tilt = 0;
-  float angle_from_accelerometer = 0;
-  float angle_from_gyro = 0;
-
-  int angle_0_8bits = 0;
-  int angle_0_16bits = 0;
-
   // Send request to CMPS12
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
@@ -244,50 +262,41 @@ float getTiltFromCMPS12(void)
   // Request 31 bytes from CMPS12
   int nReceived = 0;
   nReceived = Wire.requestFrom(I2C_CMPS12_ADDRESS, I2C_CMPS12_REGISTER_LENGTH);
-  uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = {0};
+
   nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
 
   // Something has gone wrong
   if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception CMPS12\r\n");
-    angle_0_8bits = 1;
   }
-  else
-  {
-    // read register 5
-    angle_0_8bits = data[4];
-    int16_t gyro_x_16bits = data[0x12] << 8 | data[0x13];
-    int16_t accelerometer_x = data[0x0C] << 8 | data[0x0D];
-    int16_t accelerometer_y = data[0x0E] << 8 | data[0x0F];
-    int16_t accelerometer_z = data[0x10] << 8 | data[0x11];
-    angle_from_accelerometer = atan2f(accelerometer_y, accelerometer_z) * 180.0 / PI;
+}
 
-    angle_from_gyro = (float)(gyro_x_16bits - gyro_x_offset) / GYRO_SENSITIVITY * dt * gyro_gain;
+float getTiltFromCMPS12(void)
+{
+  // Calcul l'angle à partir de l'accelerometre
+  //int16_t accelerometer_x = data[0x0C] << 8 | data[0x0D];
+  int16_t accelerometer_y = data[0x0E] << 8 | data[0x0F];
+  int16_t accelerometer_z = data[0x10] << 8 | data[0x11];
+  float angle_from_accelerometer = atan2f(accelerometer_y, accelerometer_z) * 180.0 / PI;
 
-    deltaGyroAngle = ((float)((gx - gyroOffset[0])) / GYRO_SENSITIVITY) * dT * gyroGain;
-    filterAngle = gyroFilterConstant * (filterAngle + deltaGyroAngle) + (1 - gyroFilterConstant) * (accAngle);
+  // Calcul l'angle à partir du gyroscope
+  gyroscope_current_micro = micros();
+  float gyroscope_dt = (gyroscope_current_micro - gyroscope_previous_micro) / 1000000.0;
+  int16_t gyroscope_x = (data[0x12] << 8) | data[0x13];
+  float angulare_speed_from_gyro = (float)gyroscope_x * 2000.0 / (float)0x7FFF;
+  gyroscope_previous_micro = gyroscope_current_micro;
 
+  // Angle filtré
+  // https://web.mit.edu/first/segway/#misc > https://web.mit.edu/first/segway/segspecs.zip > filter.pdf
+  float ratio = 0.05;
+  angle_from_cmps12 = (1 - ratio) * (angle_from_cmps12 + angulare_speed_from_gyro * gyroscope_dt) + (ratio) * (angle_from_accelerometer);
 
-    return angle_from_accelerometer;
-    printf("%d -> %3.2f, %d, %d, %d, %d\r\n", angle_0_8bits, angle_from_accelerometer, gyro_x_16bits, accelerometer_x, accelerometer_y, accelerometer_z);
-    //int16_t gyro_y_16bits = data[0x14] << 8 | data[0x15];
-    //int16_t gyro_z_16bits = data[0x16] << 8 | data[0x17];
-    //printf("%d -> %d, %d, %d\r\n", angle_0_8bits, gyro_x_16bits, gyro_y_16bits, gyro_z_16bits);
-  }
+  return angle_from_cmps12;
+}
 
-  // Convert to signed int
-  if (angle_0_8bits > 127)
-  {
-    tilt = angle_0_8bits - 256;
-  }
-  else
-  {
-    tilt = angle_0_8bits;
-  }
-  #define RATIO 0.3
-  tilt = RATIO * (float)tilt + (1-RATIO) * (float)angle_from_accelerometer;
-  // return tilt in degrees
-  //printf("%3.3f\r\n", angle_from_accelerometer);
-  return angle_from_accelerometer;
+float getAngularSpeedFromCMPS12(void) {
+  int16_t gyroscope_x = (data[0x12] << 8) | data[0x13];
+  float angulare_speed_from_gyro = (float)gyroscope_x * 2000.0 / (float)0x7FFF;
+  return angulare_speed_from_gyro;
 }
