@@ -31,6 +31,8 @@ float angle = 0;
 #include <WebSerial.h>
 #endif
 
+#include <mqtt_lib.h>
+
 // ***************  LED  *************** //
 
 #if NEOPIXEL_ACTIVE == 1
@@ -119,7 +121,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 #endif
 
 // ***************  CONTROL  *************** //
-float pitch_set_point = 5.0;
+float pitch_set_point = 5.62;
 float output = 0;
 float vitesse = 0;
 
@@ -128,8 +130,9 @@ unsigned long previousMillisControlLoop;
 float pitch_erreur = 0;
 float angulor_velocity = 0;
 
-#define PITCH_KP 50
-#define PITCH_KI 0
+#define PITCH_KP 70
+#define PITCH_KI 5
+#define PITCH_KD -5.15
 float dt = 0.0100;
 /********************************************/
 
@@ -167,11 +170,17 @@ void setup()
   // Disable motors
   digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 #endif
+
+//setupMQTT();
+
 }
 
 // ***************  LOOP  *************** //
 void loop()
 {
+
+//reconnectMQTT();
+
 #if OTA_ACTIVE == 1
   ArduinoOTA.handle();
 #endif
@@ -184,13 +193,16 @@ void loop()
     previousMillisControlLoop = currentMillis;
 
     float pitch = getPitchFromCMPS12();
-    // printf("%5.2f\r\n", pitch);
+    printf("p : %5.2f\r\n", pitch);
 
-    pitch_erreur = pitch_set_point - pitch;
-    angulor_velocity = angulor_velocity + pitch_erreur * dt;
-    output = PITCH_KP * angle + PITCH_KI * (angulor_velocity);
+    pitch_erreur = pitch - pitch_set_point;
+
+    printf("pe : %5.2f\r\n", pitch_erreur);
+
+    vitesse = PITCH_KP * pitch_erreur + PITCH_KD * (0-angulor_velocity);
   
-    vitesse = vitesse + output * dt;
+   //vitesse = vitesse + output * dt;
+
 
   #if MOTORS_ACTIVE == 1
     moteur_gauche.setSpeed(vitesse);
@@ -255,5 +267,5 @@ float getPitchFromCMPS12(void)
     }
   }
   // return pitch in degrees
-  return pitch;
+  return angle;
 }
