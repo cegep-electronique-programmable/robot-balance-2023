@@ -6,6 +6,10 @@
 #include "interfaces.h"
 #include "secrets.h"
 
+float pitch_accelerometre = 0;
+float angle_gyro = 0;
+float angle = 0;
+
 // ***************  WIFI  *************** //
 #if WIFI_ACTIVE == 1
 #include <WiFi.h>
@@ -25,10 +29,6 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 #include <WebSerial.h>
-#endif
-
-#if MQTT_ACTIVE == 1
-#include <mqtt_lib.h>
 #endif
 
 // ***************  LED  *************** //
@@ -118,24 +118,20 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 }
 #endif
 
-
-
 // ***************  CONTROL  *************** //
 float pitch_set_point = 5.0;
+float output = 0;
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
 
 float pitch_erreur = 0;
-float pitch_erreur_somme = 0;
+float angulor_velocity = 0;
 
-#define PITCH_KP -50
+#define PITCH_KP 50
 #define PITCH_KI 0
-float dt = 0.100;
+float dt = 0.0100;
 /********************************************/
-
-
-
 
 // ***************  SETUP  *************** //
 void setup()
@@ -146,7 +142,6 @@ void setup()
   initilisation_reussie += initialisationBroches();
   initilisation_reussie += initialisationI2C();
   initilisation_reussie += initialisationSPI();
-  initilisation_reussie += initialisationWiFi();
 
 #if MOTORS_ACTIVE == 1
   moteur_gauche.setSpeed(0);
@@ -172,13 +167,7 @@ void setup()
   // Disable motors
   digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
 #endif
-
-#if MQTT_ACTIVE == 1
-setupMQTT();
-#endif
-
 }
-
 
 // ***************  LOOP  *************** //
 void loop()
@@ -187,35 +176,36 @@ void loop()
   ArduinoOTA.handle();
 #endif
 
-#if MQTT_ACTIVE == 1
-reconnectMQTT();
-#endif
-
-  float pitch = getPitchFromCMPS12();
-  printf("%5.2f\r\n", pitch);
-
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillisControlLoop >= 100)
+  if (currentMillis - previousMillisControlLoop >= 10)
   {
     previousMillisControlLoop = currentMillis;
 
+    float pitch = getPitchFromCMPS12();
+    // printf("%5.2f\r\n", pitch);
+
     pitch_erreur = pitch_set_point - pitch;
-    pitch_erreur_somme = pitch_erreur_somme + pitch_erreur * dt;
-    vitesse = PITCH_KP * pitch_erreur + PITCH_KI * (pitch_erreur_somme);
+    angulor_velocity = angulor_velocity + pitch_erreur * dt;
+    output = PITCH_KP * angle + PITCH_KI * (angulor_velocity);
+  
+    vitesse = vitesse + output * dt;
+
+  #if MOTORS_ACTIVE == 1
+    moteur_gauche.setSpeed(vitesse);
+    moteur_droit.setSpeed(vitesse);
+  #endif
   }
-
-#if MOTORS_ACTIVE == 1
-  moteur_gauche.setSpeed(vitesse);
-  moteur_droit.setSpeed(vitesse);
-#endif
-
 }
 
 float getPitchFromCMPS12(void)
 {
+  // PITCHES CMPS12
+  float pitch_gyro = 0;
+
   float pitch = 0;
+
   int angle_0_255 = 0;
 
   // Send request to CMPS12
@@ -237,18 +227,32 @@ float getPitchFromCMPS12(void)
   }
   else
   {
-    // read register 5
+    // read registers
     angle_0_255 = data[4];
-  }
+    int16_t gyro_x = (data[0x12] << 8) + data[0x13];
+    int16_t gyro_y = (data[0x14] << 8) + data[0x15];
+    int16_t gyro_z = (data[0x16] << 8) + data[0x17];
+    angulor_velocity = (gyro_x * float(0.015)) / 7.077777777777777777; //((2000.0 / 65535) / 2);
 
-  // Convert to signed int
-  if (angle_0_255 > 127)
-  {
-    pitch = angle_0_255 - 256;
-  }
-  else
-  {
-    pitch = angle_0_255;
+    int16_t acceleration_x = (data[0x0C] << 8) + data[0x0D];
+    int16_t acceleration_y = (data[0x0E] << 8) + data[0x0F];
+    int16_t acceleration_z = (data[0x10] << 8) + data[0x11];
+    pitch_accelerometre = atan2(acceleration_y, acceleration_z) * 180 / PI;
+
+    angle_gyro = angle_gyro + (angulor_velocity * 0.1);
+    angle = (0.98) * (angle + angulor_velocity * 0.1) + (0.02) * (pitch_accelerometre);
+    // printf("calculated angle : %6f \r", angle); // uyfitf
+    unsigned long currentMillis = millis();
+
+    if (currentMillis - previousMillisControlLoop >= 1000)
+    {
+      previousMillisControlLoop = currentMillis;
+      printf("--------------------------------------------------------------------\n");
+      printf("angulor velocity : %6f \n", angulor_velocity);
+      printf("acceleration_pitch : %6f \n", pitch_accelerometre);
+      printf("gyroscope angle : %6f \n", angle_gyro);
+      printf("angle : %6f \n", angle);
+    }
   }
   // return pitch in degrees
   return pitch;
