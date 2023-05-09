@@ -81,6 +81,4 @@ void reconnectMQTT()
    }
 }
 
-/* Publish to MQTT */
-//* clientMQTT.publish(MQTT_TOPIC, data);
 

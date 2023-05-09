@@ -24,4 +24,12 @@ void reconnectMQTT();
 /*
 ! TO PUT IN MAIN.CPP
 
+	//? MQTT_TOPIC to communicate with it
+
+setupMQTT(); //? in setup{}
+
+reconnectMQTT(); //? in loop{}
+
+clientMQTT.publish(MQTT_TOPIC, data); //? if want to publish
+
 */
