@@ -204,23 +204,6 @@ void loop()
   float tilt = getTiltFromCMPS12();
   printf("Tilt: %f\r\n", tilt);
 
-  /*tilt_array[tilt_index] = tilt;
-
-  tilt_index++;
-
-  if (tilt_index >= 10)
-  {
-    tilt_index = 0;
-  }
-
-  tilt = 0;
-  for (int i = 0; i < 10; i++)
-  {
-    tilt += tilt_array[i];
-  }
-  tilt = tilt / 10;
-  */
-
   if ((tilt > 25.0) || (tilt < -25.0))
   {
     // Disable motors
@@ -231,9 +214,6 @@ void loop()
     // Enable motors
     digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
   }
-
-  
-  //getTiltFromCMPS12();
 
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
