@@ -20,6 +20,10 @@ StepperNB::StepperNB(int pin_direction, int pin_step, int pin_ms1, int pin_ms2, 
     this->target_speed_degrees_per_second = 0;
 }
 
+float StepperNB::getSpeed(void) {
+    return this->target_speed_degrees_per_second;
+}
+
 void StepperNB::setSpeed(float target_speed_degrees_per_second)
 {
     this->target_speed_degrees_per_second = target_speed_degrees_per_second;

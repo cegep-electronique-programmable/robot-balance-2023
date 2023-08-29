@@ -39,7 +39,18 @@ int pixel = 0;
 #include <Wire.h>
 #endif
 
-float getPitchFromCMPS12(void);
+
+
+void getDataFromCMPS12(uint8_t *data);
+uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = {0};
+
+float getTiltFromCMPS12(void);
+float getAngularSpeedFromCMPS12(void);
+
+unsigned long gyroscope_previous_micro = 0;
+unsigned long gyroscope_current_micro = 0;
+float angle_from_gyro = 0;
+float angle_from_cmps12 = 0;
 
 // ***************  SPI  *************** //
 
@@ -117,17 +128,24 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float pitch_set_point = 0.0;
+float tilt_set_point = -0.2;
+float tilt_speed_set_point = 0;
+
+float tilt_erreur = 0;
+float tilt_erreur_somme = 0;
+float tilt_speed_erreur = 0;
+
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
 
-float pitch_erreur = 0;
-float pitch_erreur_somme = 0;
+#define DIAMETRE_ROUE 0.91
 
-#define PITCH_KP -40
-#define PITCH_KI -80
-float dt = 0.100;
+#define KP -13
+#define KI -1
+#define KD -1
+
+float dt = 0.001;
 /********************************************/
 
 
@@ -169,6 +187,9 @@ void setup()
 #endif
 }
 
+uint8_t tilt_index = 0;
+float tilt_array[10];
+
 
 // ***************  LOOP  *************** //
 void loop()
@@ -177,8 +198,42 @@ void loop()
   ArduinoOTA.handle();
 #endif
 
-  float pitch = getPitchFromCMPS12();
-  printf("%5.2f\r\n", pitch);
+  // lecture des capteurs
+  getDataFromCMPS12(data);
+
+  float tilt = getTiltFromCMPS12();
+  printf("Tilt: %f\r\n", tilt);
+
+  /*tilt_array[tilt_index] = tilt;
+
+  tilt_index++;
+
+  if (tilt_index >= 10)
+  {
+    tilt_index = 0;
+  }
+
+  tilt = 0;
+  for (int i = 0; i < 10; i++)
+  {
+    tilt += tilt_array[i];
+  }
+  tilt = tilt / 10;
+  */
+
+  if ((tilt > 25.0) || (tilt < -25.0))
+  {
+    // Disable motors
+    digitalWrite(GPIO_ENABLE_MOTEURS, HIGH);
+  }
+  else
+  {
+    // Enable motors
+    digitalWrite(GPIO_ENABLE_MOTEURS, LOW);
+  }
+
+  
+  //getTiltFromCMPS12();
 
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
@@ -187,9 +242,17 @@ void loop()
   {
     previousMillisControlLoop = currentMillis;
 
-    pitch_erreur = pitch_set_point - pitch;
-    pitch_erreur_somme = pitch_erreur_somme + pitch_erreur * dt;
-    vitesse = PITCH_KP * pitch_erreur + PITCH_KI * (pitch_erreur_somme);
+    tilt_erreur = tilt_set_point - getTiltFromCMPS12();
+    tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
+    tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
+    float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
+    #define ACCELERATION_MAX 150
+    acceleration = acceleration > ACCELERATION_MAX ? ACCELERATION_MAX : acceleration;
+    acceleration = acceleration < -ACCELERATION_MAX ? -ACCELERATION_MAX : acceleration;
+    vitesse = moteur_droit.getSpeed() + acceleration;
+    #define VITESSE_MAX 720
+    vitesse = vitesse > VITESSE_MAX ? VITESSE_MAX : vitesse;
+    vitesse = vitesse < -VITESSE_MAX ? -VITESSE_MAX : vitesse;
   }
 
 #if MOTORS_ACTIVE == 1
@@ -198,11 +261,10 @@ void loop()
 #endif
 }
 
-float getPitchFromCMPS12(void)
-{
-  float pitch = 0;
-  int angle_0_255 = 0;
 
+
+void getDataFromCMPS12(uint8_t *data)
+{
   // Send request to CMPS12
   Wire.beginTransmission(I2C_CMPS12_ADDRESS);
   Wire.write(0);
@@ -211,30 +273,41 @@ float getPitchFromCMPS12(void)
   // Request 31 bytes from CMPS12
   int nReceived = 0;
   nReceived = Wire.requestFrom(I2C_CMPS12_ADDRESS, I2C_CMPS12_REGISTER_LENGTH);
-  uint8_t data[I2C_CMPS12_REGISTER_LENGTH] = {0};
+
   nReceived = Wire.readBytes(data, I2C_CMPS12_REGISTER_LENGTH);
 
   // Something has gone wrong
   if (nReceived != I2C_CMPS12_REGISTER_LENGTH)
   {
     printf("Erreur de reception CMPS12\r\n");
-    angle_0_255 = 1;
   }
-  else
-  {
-    // read register 5
-    angle_0_255 = data[4];
-  }
+}
 
-  // Convert to signed int
-  if (angle_0_255 > 127)
-  {
-    pitch = angle_0_255 - 256;
-  }
-  else
-  {
-    pitch = angle_0_255;
-  }
-  // return pitch in degrees
-  return pitch;
+float getTiltFromCMPS12(void)
+{
+  // Calcul l'angle à partir de l'accelerometre
+  //int16_t accelerometer_x = data[0x0C] << 8 | data[0x0D];
+  int16_t accelerometer_y = data[0x0E] << 8 | data[0x0F];
+  int16_t accelerometer_z = data[0x10] << 8 | data[0x11];
+  float angle_from_accelerometer = atan2f(accelerometer_y, accelerometer_z) * 180.0 / PI;
+
+  // Calcul l'angle à partir du gyroscope
+  gyroscope_current_micro = micros();
+  float gyroscope_dt = (gyroscope_current_micro - gyroscope_previous_micro) / 1000000.0;
+  int16_t gyroscope_x = (data[0x12] << 8) | data[0x13];
+  float angulare_speed_from_gyro = (float)gyroscope_x * 2000.0 / (float)0x7FFF;
+  gyroscope_previous_micro = gyroscope_current_micro;
+
+  // Angle filtré
+  // https://web.mit.edu/first/segway/#misc > https://web.mit.edu/first/segway/segspecs.zip > filter.pdf
+  float ratio = 0.02;
+  angle_from_cmps12 = (1 - ratio) * (angle_from_cmps12 + angulare_speed_from_gyro * gyroscope_dt) + (ratio) * (angle_from_accelerometer);
+
+  return angle_from_cmps12;
+}
+
+float getAngularSpeedFromCMPS12(void) {
+  int16_t gyroscope_x = (data[0x12] << 8) | data[0x13];
+  float angulare_speed_from_gyro = (float)gyroscope_x * 2000.0 / (float)0x7FFF;
+  return angulare_speed_from_gyro;
 }

@@ -8,6 +8,7 @@ public:
     // constructors:
     StepperNB(int pin_direction, int pin_step, int pin_ms1, int pin_ms2, int pin_ms3, int number_of_steps, bool direction_inverted);
 
+    float getSpeed(void);
     void setSpeed(float target_speed_degrees_per_second);
     int getDirection(void);
     void setDirection(int direction);
