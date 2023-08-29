@@ -140,9 +140,11 @@ float vitesse = 0;
 unsigned long previousMillisControlLoop;
 
 #define DIAMETRE_ROUE 0.91
+#define TILT_ERROR_DEADBAND 0.5
+#define TILT_SPEED_ERROR_DEADBAND 0
 
 #define KP -14
-#define KI -2
+#define KI -4
 #define KD -0.5
 
 float dt = 0.001;
@@ -223,7 +225,19 @@ void loop()
     previousMillisControlLoop = currentMillis;
 
     tilt_erreur = tilt_set_point - getTiltFromCMPS12();
+
+    if (tilt_erreur < TILT_ERROR_DEADBAND && tilt_erreur > -TILT_ERROR_DEADBAND)
+    {
+      tilt_erreur = 0;
+    }
+
     tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
+
+    if (tilt_speed_erreur < TILT_SPEED_ERROR_DEADBAND && tilt_speed_erreur > -TILT_SPEED_ERROR_DEADBAND)
+    {
+      tilt_speed_erreur = 0;
+    }
+
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
     float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
     #define ACCELERATION_MAX 500
