@@ -128,7 +128,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float tilt_set_point = -0.2;
+float tilt_set_point = 1.2;
 float tilt_speed_set_point = 0;
 
 float tilt_erreur = 0;
@@ -141,9 +141,9 @@ unsigned long previousMillisControlLoop;
 
 #define DIAMETRE_ROUE 0.91
 
-#define KP -13
-#define KI -1
-#define KD -1
+#define KP -14
+#define KI -2
+#define KD -0.5
 
 float dt = 0.001;
 /********************************************/
@@ -226,7 +226,7 @@ void loop()
     tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
     float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
-    #define ACCELERATION_MAX 150
+    #define ACCELERATION_MAX 500
     acceleration = acceleration > ACCELERATION_MAX ? ACCELERATION_MAX : acceleration;
     acceleration = acceleration < -ACCELERATION_MAX ? -ACCELERATION_MAX : acceleration;
     vitesse = moteur_droit.getSpeed() + acceleration;
