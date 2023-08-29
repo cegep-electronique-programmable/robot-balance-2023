@@ -117,7 +117,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float pitch_set_point = 5.0;
+float pitch_set_point = 0.0;
 float vitesse = 0;
 
 unsigned long previousMillisControlLoop;
@@ -125,8 +125,8 @@ unsigned long previousMillisControlLoop;
 float pitch_erreur = 0;
 float pitch_erreur_somme = 0;
 
-#define PITCH_KP -50
-#define PITCH_KI 0
+#define PITCH_KP -40
+#define PITCH_KI -80
 float dt = 0.100;
 /********************************************/
 
