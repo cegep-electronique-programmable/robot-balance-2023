@@ -263,12 +263,25 @@ void loop()
       pixels.setPixelColor(1, pixels.Color(0, 255, 0));
       pixels.show();
     }
-    acceleration = acceleration > ACCELERATION_MAX ? ACCELERATION_MAX : acceleration;
-    acceleration = acceleration < -ACCELERATION_MAX ? -ACCELERATION_MAX : acceleration;
+
     vitesse = moteur_droit.getSpeed() + acceleration;
     #define VITESSE_MAX 720
-    vitesse = vitesse > VITESSE_MAX ? VITESSE_MAX : vitesse;
-    vitesse = vitesse < -VITESSE_MAX ? -VITESSE_MAX : vitesse;
+    if (vitesse > VITESSE_MAX)
+    {
+      vitesse = VITESSE_MAX;
+      pixels.setPixelColor(2, pixels.Color(255, 0, 0));
+      pixels.show();
+    }
+    else if (vitesse < -VITESSE_MAX)
+    {
+      vitesse = -VITESSE_MAX;
+      pixels.setPixelColor(2, pixels.Color(255, 0, 0));
+      pixels.show();
+    }
+    else {
+      pixels.setPixelColor(2, pixels.Color(0, 255, 0));
+      pixels.show();
+    }
   }
 
 #if MOTORS_ACTIVE == 1
