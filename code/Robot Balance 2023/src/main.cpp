@@ -229,6 +229,12 @@ void loop()
     if (tilt_erreur < TILT_ERROR_DEADBAND && tilt_erreur > -TILT_ERROR_DEADBAND)
     {
       tilt_erreur = 0;
+      pixels.setPixelColor(0, pixels.Color(0, 255, 0));
+      pixels.show();
+    }
+    else {
+      pixels.setPixelColor(0, pixels.Color(255, 0, 0));
+      pixels.show();
     }
 
     tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
