@@ -128,7 +128,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float tilt_set_point = 1.2;
+float tilt_set_point = 3.20;
 float tilt_speed_set_point = 0;
 
 float tilt_erreur = 0;
@@ -140,12 +140,12 @@ float vitesse = 0;
 unsigned long previousMillisControlLoop;
 
 #define DIAMETRE_ROUE 0.91
-#define TILT_ERROR_DEADBAND 0.5
+#define TILT_ERROR_DEADBAND 0.25
 #define TILT_SPEED_ERROR_DEADBAND 0
 
-#define KP -14
-#define KI -4
-#define KD -0.5
+#define KP -20
+#define KI -12
+#define KD -0.75
 
 float dt = 0.001;
 /********************************************/
