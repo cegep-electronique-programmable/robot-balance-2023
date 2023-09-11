@@ -247,6 +247,22 @@ void loop()
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
     float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
     #define ACCELERATION_MAX 500
+    if (acceleration > ACCELERATION_MAX)
+    {
+      acceleration = ACCELERATION_MAX;
+      pixels.setPixelColor(1, pixels.Color(255, 0, 0));
+      pixels.show();
+    }
+    else if (acceleration < -ACCELERATION_MAX)
+    {
+      acceleration = -ACCELERATION_MAX;
+      pixels.setPixelColor(1, pixels.Color(255, 0, 0));
+      pixels.show();
+    }
+    else {
+      pixels.setPixelColor(1, pixels.Color(0, 255, 0));
+      pixels.show();
+    }
     acceleration = acceleration > ACCELERATION_MAX ? ACCELERATION_MAX : acceleration;
     acceleration = acceleration < -ACCELERATION_MAX ? -ACCELERATION_MAX : acceleration;
     vitesse = moteur_droit.getSpeed() + acceleration;
