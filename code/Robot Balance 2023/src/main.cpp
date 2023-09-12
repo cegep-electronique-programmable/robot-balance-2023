@@ -141,9 +141,9 @@ unsigned long previousMillisControlLoop;
 
 #define DIAMETRE_ROUE 0.91
 #define TILT_ERROR_DEADBAND 0.25
-#define TILT_SPEED_ERROR_DEADBAND 0
+#define TILT_SPEED_ERROR_DEADBAND 1.0
 
-#define KP -20
+#define KP -10
 #define KI -12
 #define KD -0.75
 
@@ -204,7 +204,7 @@ void loop()
   getDataFromCMPS12(data);
 
   float tilt = getTiltFromCMPS12();
-  printf("Tilt: %f\r\n", tilt);
+  //printf("Tilt: %f\r\n", tilt);
 
   if ((tilt > 25.0) || (tilt < -25.0))
   {
@@ -245,7 +245,14 @@ void loop()
     }
 
     tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
-    float acceleration = KP * tilt_erreur + KI * tilt_erreur_somme + KD * tilt_speed_erreur;
+
+    float acceleration_P = KP * tilt_erreur;
+    float acceleration_I = KI * tilt_erreur_somme;
+    float acceleration_D = KD * tilt_speed_erreur;
+    float acceleration = acceleration_P + acceleration_I + acceleration_D;
+
+    printf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n", tilt, tilt_set_point, tilt_erreur, tilt_speed_erreur, acceleration_P, acceleration_I, acceleration_D);
+
     #define ACCELERATION_MAX 500
     if (acceleration > ACCELERATION_MAX)
     {
