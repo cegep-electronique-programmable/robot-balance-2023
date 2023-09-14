@@ -143,11 +143,12 @@ unsigned long previousMillisControlLoop;
 #define TILT_ERROR_DEADBAND 0.25
 #define TILT_SPEED_ERROR_DEADBAND 1.0
 
-#define KP -10
-#define KI -12
-#define KD -0.75
+#define KP -1.20
+#define KI -0.12
+#define KD -0.01
 
 float dt = 0.001;
+uint8_t anti_windup = 0;
 /********************************************/
 
 
@@ -220,7 +221,7 @@ void loop()
   // Boucle de controle de la vitesse horizontale
   unsigned long currentMillis = millis();
 
-  if (currentMillis - previousMillisControlLoop >= 100)
+  if (currentMillis - previousMillisControlLoop >= dt*1000)
   {
     previousMillisControlLoop = currentMillis;
 
@@ -237,36 +238,42 @@ void loop()
       pixels.show();
     }
 
-    tilt_speed_erreur = tilt_speed_set_point - getAngularSpeedFromCMPS12();
+    tilt_speed_erreur = (tilt_speed_set_point - getAngularSpeedFromCMPS12());
 
     if (tilt_speed_erreur < TILT_SPEED_ERROR_DEADBAND && tilt_speed_erreur > -TILT_SPEED_ERROR_DEADBAND)
     {
       tilt_speed_erreur = 0;
     }
 
-    tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
+    if (anti_windup == 0) 
+    {  
+      tilt_erreur_somme = tilt_erreur_somme + tilt_erreur * dt;
+    }
 
     float acceleration_P = KP * tilt_erreur;
     float acceleration_I = KI * tilt_erreur_somme;
     float acceleration_D = KD * tilt_speed_erreur;
     float acceleration = acceleration_P + acceleration_I + acceleration_D;
 
-    printf("%.2f, %.2f, %.2f, %.2f, %.2f, %.2f, %.2f\r\n", tilt, tilt_set_point, tilt_erreur, tilt_speed_erreur, acceleration_P, acceleration_I, acceleration_D);
+    printf("%6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f, %6.2f\r\n", tilt, tilt_set_point, tilt_erreur, tilt_erreur_somme, tilt_speed_erreur, acceleration_P, acceleration_I, acceleration_D);
 
     #define ACCELERATION_MAX 500
     if (acceleration > ACCELERATION_MAX)
     {
+      anti_windup = 1;
       acceleration = ACCELERATION_MAX;
       pixels.setPixelColor(1, pixels.Color(255, 0, 0));
       pixels.show();
     }
     else if (acceleration < -ACCELERATION_MAX)
     {
+      anti_windup = 1;
       acceleration = -ACCELERATION_MAX;
       pixels.setPixelColor(1, pixels.Color(255, 0, 0));
       pixels.show();
     }
     else {
+      anti_windup = 0;
       pixels.setPixelColor(1, pixels.Color(0, 255, 0));
       pixels.show();
     }
