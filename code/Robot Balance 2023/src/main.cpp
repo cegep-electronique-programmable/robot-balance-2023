@@ -128,7 +128,7 @@ void IRAM_ATTR Timer3_MoteurD_ISR()
 
 
 // ***************  CONTROL  *************** //
-float tilt_set_point = 3.20;
+float tilt_set_point = 1.20;
 float tilt_speed_set_point = 0;
 
 float tilt_erreur = 0;
@@ -144,8 +144,8 @@ unsigned long previousMillisControlLoop;
 #define TILT_SPEED_ERROR_DEADBAND 1.0
 
 #define KP -1.20
-#define KI -0.12
-#define KD -0.01
+#define KI -0.82
+#define KD -0.1
 
 float dt = 0.001;
 uint8_t anti_windup = 0;
