@@ -20,7 +20,8 @@ Les roues sont entrainées par des moteurs pas-à-pas de type NEMA-17.
 
 
 
-![Robot Balance 2023](https://github.com/cegep-electronique-programmable/robot-balance-2023/blob/main/Media/robot.png?raw=true)
+![robot-balance-nov-2023](https://github.com/cegep-electronique-programmable/robot-balance-2023/assets/5272111/87b1dffa-db0e-4e52-b094-e74ac847934b)
+
 
 ### Électronique
 
