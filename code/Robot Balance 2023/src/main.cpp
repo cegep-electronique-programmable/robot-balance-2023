@@ -354,3 +354,5 @@ float getAngularSpeedFromCMPS12(void) {
   float angulare_speed_from_gyro = (float)gyroscope_x * 2000.0 / (float)0x7FFF;
   return angulare_speed_from_gyro;
 }
+
+//Test GitHub 2 Maxime 
