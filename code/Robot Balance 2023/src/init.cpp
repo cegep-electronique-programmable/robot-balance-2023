@@ -61,8 +61,8 @@ int initialisationBroches(void)
 // Fonction d'initialisation de l'UART
 int initialisationSerie(void)
 {
-  Serial.setPins(GPIO_UART_TX, GPIO_UART_RX);
   Serial.begin(115200);
+  Serial.setPins(GPIO_UART_RX, GPIO_UART_TX);
   printf("\r\n\r\nRobot Balance code 2024\r\n");
   return 0;
 }
