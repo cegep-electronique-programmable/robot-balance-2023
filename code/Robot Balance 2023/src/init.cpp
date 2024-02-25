@@ -81,3 +81,36 @@ int initialisationsNeoPixel(Adafruit_NeoPixel pixels)
   pixels.show();
   return 0;
 }
+
+// Fonction d'initialisation des PWM utilisées pour les moteurs
+int initialisationPWMMoteurs(void)
+{
+  ledcSetup(PWM_CHANNEL_0, PWM_FREQ_INIT, PWM_RESOLUTION);
+  ledcAttachPin(GPIO_STEP_D, PWM_CHANNEL_0);
+  ledcWrite(PWM_CHANNEL_0, PWM_DUTY_MID);
+
+  digitalWrite(GPIO_DIR_D, LOW);
+  digitalWrite(GPIO_MS1_D, HIGH);
+  digitalWrite(GPIO_MS2_D, HIGH);
+  digitalWrite(GPIO_MS3_D, HIGH);
+  return 0;
+}
+
+int initialisationI2C(void)
+{
+  bool success = false;
+
+  //Initialisation de l'I2C en mode master
+  success = Wire.begin(GPIO_I2C_SDA, GPIO_I2C_SCL, MXC6655XA_I2C_BAUD_RATE); 
+
+  printf("Valeur %d retournée par initialisationI2C()\r\n", !success);
+  if (!success)
+  {
+    printf("Erreur d'initialisation de l'I2C\r\n");
+  }
+  else
+  {
+    printf("I2C initialisé avec succès\r\n");
+  }
+  return !success; //Retourne 0 si l'initialisation a réussi, 1 sinon
+}
