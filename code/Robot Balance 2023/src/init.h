@@ -27,6 +27,11 @@ const int MXC6655XA_I2C_XOUT_REG_LENGTH = 2;
 const int MXC6655XA_I2C_REGISTER_LENGTH = 0x0F;
 const int MXC6655XA_I2C_BAUD_RATE = 115200;
 
+struct structInfoMouvement {
+  int inclinaison;           // inclinaison en degré (signé)
+  int vitesse;               // vitesse en degré par sec (signé)
+};
+
 // ************************************* //
 
 int initialisationBroches(void);
