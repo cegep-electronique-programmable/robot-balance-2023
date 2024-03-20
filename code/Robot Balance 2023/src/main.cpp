@@ -156,6 +156,57 @@ void commandeMoteurs(float vitessCible)
 
 }
 
+//Pour tester la vitesse des moteurs, appeler cette fonction chaque seconde
+void testVitesseMoteurs(void){
+  static int freq_actuel = 0;
+  static int etat = 0;  // 0 pour accel - 1 pour attente - 2 pour decel - 3 pour attente 
+  static int attente = 0;
+
+  switch (etat)
+  {
+    case 0:
+      if (freq_actuel < 1000){
+        freq_actuel +=10;
+      }
+      else{
+        etat = 1;
+      }
+      break;
+    case 1:
+      if (attente < 2000){
+        attente +=1;
+      }
+      else{
+        attente = 0;
+        etat = 2;
+      }    
+      break;
+    case 2:
+      if (freq_actuel != 0){
+        freq_actuel -= 10;
+      }
+      else{
+        etat = 3;
+      }
+      break;  
+    case 3:
+      if (attente < 2000){
+        attente +=1;
+      }
+      else{
+        attente = 0;
+        etat = 0;
+      }    
+      break;            
+    default:
+      break;
+  }
+
+
+
+  ledcChangeFrequency(PWM_CHANNEL_0, freq_actuel, PWM_RESOLUTION);
+}
+
 
 void loop() {
   int test = 0;
@@ -171,22 +222,17 @@ void loop() {
     //pixels.setPixelColor(3, pixels.Color(255, 0, 0));
     //pixels.show();    
     
-    getInfoMouvement(&myStructInfoMouvement);
+    //getInfoMouvement(&myStructInfoMouvement);
 
-    vitessCible = bouclePID(&myStructInfoMouvement);
+    //vitessCible = bouclePID(&myStructInfoMouvement);
 
-    commandeMoteurs(vitessCible);
+    //commandeMoteurs(vitessCible);
+    testVitesseMoteurs();
 
-
-    //printf("incli: %d, vitesse: %d\r\n\n", myStructInfoMouvement.inclinaison, myStructInfoMouvement.vitesse);
-
-    //ledcChangeFrequency(PWM_CHANNEL_0, PWM_FREQ_INIT, PWM_RESOLUTION);
-
-    delay(1000);              // 1 sec
+    delay(1);              // 1 millisec
   
   }
 
-  //Test commit from GitHub
 
 }
 
