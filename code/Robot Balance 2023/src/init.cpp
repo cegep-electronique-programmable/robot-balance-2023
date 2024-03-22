@@ -85,14 +85,26 @@ int initialisationsNeoPixel(Adafruit_NeoPixel pixels)
 // Fonction d'initialisation des PWM utilisées pour les moteurs
 int initialisationPWMMoteurs(void)
 {
-  ledcSetup(PWM_CHANNEL_0, PWM_FREQ_INIT, PWM_RESOLUTION);
-  ledcAttachPin(GPIO_STEP_D, PWM_CHANNEL_0);
-  ledcWrite(PWM_CHANNEL_0, PWM_DUTY_MID);
+  // Initialisation moteur droit
+  ledcSetup(PWM_CHANNEL_D, PWM_FREQ_INIT, PWM_RESOLUTION);
+  ledcAttachPin(GPIO_STEP_D, PWM_CHANNEL_D);
+  ledcWrite(PWM_CHANNEL_D, PWM_DUTY_MID);
 
   digitalWrite(GPIO_DIR_D, LOW);
   digitalWrite(GPIO_MS1_D, HIGH);
   digitalWrite(GPIO_MS2_D, HIGH);
   digitalWrite(GPIO_MS3_D, HIGH);
+
+  // Initialisation moteur gauche
+  ledcSetup(PWM_CHANNEL_G, PWM_FREQ_INIT, PWM_RESOLUTION);
+  ledcAttachPin(GPIO_STEP_G, PWM_CHANNEL_G);
+  ledcWrite(PWM_CHANNEL_G, PWM_DUTY_MID);
+
+  digitalWrite(GPIO_DIR_G, HIGH);
+  digitalWrite(GPIO_MS1_G, HIGH);
+  digitalWrite(GPIO_MS2_G, HIGH);
+  digitalWrite(GPIO_MS3_G, HIGH);
+
   return 0;
 }
 

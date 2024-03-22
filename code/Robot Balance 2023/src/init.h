@@ -9,7 +9,8 @@
 
 // ***********  PWM MOTEURS  *********** //  
 
-const int PWM_CHANNEL_0 = 0;      //Canal 0 (maximum de 8 canaux)
+const int PWM_CHANNEL_D = 0;      //Canal 0 (maximum de 8 canaux)
+const int PWM_CHANNEL_G = 1;      //Canal 0 (maximum de 8 canaux)
 const int PWM_FREQ_INIT = 0;             //Fréquence PWM
 const int PWM_RESOLUTION = 8;        //Résolution PWM (nombre de bits)
 const int PWM_DUTY_MAX = 0xFF;        //PWM Duty Cycle max

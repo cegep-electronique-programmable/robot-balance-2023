@@ -38,14 +38,16 @@ void setup() {
 
 void getInfoMouvement(structInfoMouvement * myStructInfoMouvement){
 
-  byte dataCMPS12[19];
-  int iFori2c = 0;
-  int IncliParCMPSReg4 = 0;
-  int IncliParCalcul = 0;
-  int incli = 0;
-  int accelY = 0;
-  int accelZ = 0;
-  int gyroX = 0;
+
+  int8_t dataCMPS12[19];
+  int16_t iFori2c = 0;
+  int16_t IncliParCMPSReg4 = 0;
+  int16_t IncliParCalcul = 0;
+  int16_t incli = 0;
+  int16_t accelY = 0;
+  int16_t accelZ = 0;
+  int16_t gyroX = 0;
+  float angulare_speed_from_gyro = 0;
 
 
 
@@ -62,29 +64,38 @@ void getInfoMouvement(structInfoMouvement * myStructInfoMouvement){
     if (iFori2c == 19){
       break;
     }
-  }  
+  } 
 
-  IncliParCMPSReg4 = dataCMPS12[4];
-  //printf("Inclinaison par le registre 4: %d (%x)\r\n", IncliParCMPSReg4, IncliParCMPSReg4);
-  if (dataCMPS12[4] & 0x80){
-    IncliParCMPSReg4 = 0xFF00 | IncliParCMPSReg4;
+  if (19 != iFori2c){
+    printf("CMPS12 ERR\r\n");
   }
-  //printf("Inclinaison par le registre 4: %d (%x)\r\n", IncliParCMPSReg4, IncliParCMPSReg4);
+  else{
+    IncliParCMPSReg4 = (int) dataCMPS12[4];
+    accelY = (dataCMPS12[14] << 8) | dataCMPS12[15];
+    accelZ = (dataCMPS12[16] << 8) | dataCMPS12[17];
+    gyroX = (dataCMPS12[18] << 8) | dataCMPS12[19];
+    float angulare_speed_from_gyro = (float)gyroX * 2000.0 / (float)0x7FFF;
 
-  accelY = (dataCMPS12[14] << 8) | dataCMPS12[15];
-  //printf("AccelY: %d (%x)\r\n", accelY, accelY);
+    myStructInfoMouvement->inclinaison = IncliParCMPSReg4;
+    myStructInfoMouvement->vitesse = gyroX;
 
-  accelZ = (dataCMPS12[16] << 8) | dataCMPS12[17];
-  //printf("AccelZ: %d (%x)\r\n", accelZ, accelZ);
+    //printf pour inclinaison
+    //printf("IncliParCMPSReg4;%d;", IncliParCMPSReg4); //Conversion validé !  
+    //printf("accelY;%d;", accelY);
+    //printf("accelZ;%d;", accelZ);
+    //printf("IncliParAccel;%d;", IncliParAccel);
 
-  gyroX = (dataCMPS12[18] << 8) | dataCMPS12[19];
-  printf("GyroX: %d (%x)\r\n", gyroX, gyroX);
-  float angulare_speed_from_gyro = (float)gyroX * 2000.0 / (float)0x7FFF;
-  printf("angulare_speed_from_gyro: %d (%x)\r\n\n", angulare_speed_from_gyro, angulare_speed_from_gyro);
+    //printf pour vitesse
+    printf("angulare_speed_from_gyro;%f;", angulare_speed_from_gyro);  //Conversion validé !  
+
+    printf("\r\n");    
+  }
 
 
-  myStructInfoMouvement->inclinaison = IncliParCMPSReg4;
-  myStructInfoMouvement->vitesse = gyroX;
+
+
+
+
 
 
 /*
@@ -156,37 +167,40 @@ void commandeMoteurs(float vitessCible)
 
 }
 
-//Pour tester la vitesse des moteurs, appeler cette fonction chaque seconde
+//Pour tester la vitesse des moteurs, appeler cette fonction chaque milliseconde
 void testVitesseMoteurs(void){
-  static int freq_actuel = 0;
+  static int freq_actuel = 10;
   static int etat = 0;  // 0 pour accel - 1 pour attente - 2 pour decel - 3 pour attente 
   static int attente = 0;
 
   switch (etat)
   {
     case 0:
-      if (freq_actuel < 1000){
-        freq_actuel +=10;
+      if (freq_actuel < 6000){
+        freq_actuel +=40;
       }
       else{
         etat = 1;
+        printf("etat 1 - freq == %d\r\n", freq_actuel);
       }
       break;
     case 1:
-      if (attente < 2000){
+      if (attente < 500){
         attente +=1;
       }
       else{
         attente = 0;
         etat = 2;
+        printf("etat 2\r\n");
       }    
       break;
     case 2:
-      if (freq_actuel != 0){
+      if (freq_actuel > 10){
         freq_actuel -= 10;
       }
       else{
         etat = 3;
+        printf("etat 3 - freq == %d\r\n", freq_actuel);
       }
       break;  
     case 3:
@@ -196,6 +210,7 @@ void testVitesseMoteurs(void){
       else{
         attente = 0;
         etat = 0;
+        printf("etat 0\r\n");
       }    
       break;            
     default:
@@ -204,7 +219,8 @@ void testVitesseMoteurs(void){
 
 
 
-  ledcChangeFrequency(PWM_CHANNEL_0, freq_actuel, PWM_RESOLUTION);
+  ledcChangeFrequency(PWM_CHANNEL_D, freq_actuel, PWM_RESOLUTION);
+  ledcChangeFrequency(PWM_CHANNEL_G, freq_actuel, PWM_RESOLUTION);
 }
 
 
@@ -217,19 +233,19 @@ void loop() {
 
   while(1){
 
-    printf("%i\r\n", test++);
+    //printf("%i\r\n", test++);
 
     //pixels.setPixelColor(3, pixels.Color(255, 0, 0));
     //pixels.show();    
     
-    //getInfoMouvement(&myStructInfoMouvement);
+    getInfoMouvement(&myStructInfoMouvement);
 
     //vitessCible = bouclePID(&myStructInfoMouvement);
 
     //commandeMoteurs(vitessCible);
-    testVitesseMoteurs();
+    //testVitesseMoteurs();
 
-    delay(1);              // 1 millisec
+    delay(200);              // délais en ms
   
   }
 
