@@ -33,13 +33,16 @@ int pixel = 0;
 
 //Quand même bien !
 //const float Kp = 600;
-const float Ki = 0;
+//const float Ki = 0;
 //const float Kd = 1;
 
 const float Kp = 400;
+const float Ki = 0;
 const float Kd = 2;
-const int16_t Consigne = 2;
 
+
+int16_t Consigne = 2;
+static float vitesseActuelle = 0;
 
 // ********  Controle vitesse  ******** //  
 #define INCREMENT_VITESSE 80
@@ -139,6 +142,11 @@ float bouclePID(structInfoMouvement * myStructInfoMouvement)
     derivee = myStructInfoMouvement->vitesse;
   }
 
+  myStructInfoMouvement->position = vitesseActuelle * (tempsActuel - tempsPrecedent);
+  //TODO: faire boucle pid pour modifier la consigne d'inclinaison
+
+
+
   vitesseCible = Kp * erreurActuelle + Ki * integrale + Kd * derivee;
 
 
@@ -162,7 +170,7 @@ float bouclePID(structInfoMouvement * myStructInfoMouvement)
 
 void commandeMoteurs(float vitessCible)
 {
-  static float vitesseActuelle = 0;
+
   uint32_t newFreq = 0;
 
   // Trouver nouvelle cible
@@ -260,7 +268,7 @@ void loop() {
   int test = 0;
   uint8_t mxc6655xaXout[MXC6655XA_I2C_XOUT_REG_LENGTH];
 
-  struct structInfoMouvement myStructInfoMouvement = {0, 0};
+  struct structInfoMouvement myStructInfoMouvement = {0, 0, 0};
   float vitessCible = 0;
 
   while(1){
